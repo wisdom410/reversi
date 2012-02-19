@@ -24,10 +24,11 @@ import javax.swing.JPanel;
  */
 public class ImageChessBoard extends JPanel{
 	
-	public ImageChessBoard(ChessManList list)
+	public ImageChessBoard(ChessManList list, ChessManList canPlace)
 	{
 		super();
 		this.list = list;
+		this.canPlace = canPlace;
 		this.setLayout(null);
 		
 		
@@ -50,13 +51,18 @@ public class ImageChessBoard extends JPanel{
 		
 		ImageIcon blackimg = new ImageIcon("res\\black_ball.png");
 		ImageIcon whiteimg = new ImageIcon("res\\white_ball.png");
-		for(int i = 0; i< list.getNum();i++)
+		for(int i = 0; i< list.getSize();i++)
 		{
 			ChessMan chessMan = list.getChessMan(i);
 			if(chessMan.isBlack())
-				g.drawImage(blackimg.getImage(), startx + chessMan.getX()*56 + 5, starty + chessMan.getY()*56+5, 46, 46, this);
+				g.drawImage(blackimg.getImage(), startx + (chessMan.getX()-1)*56 + 5, starty + (chessMan.getY()-1)*56+5, 46, 46, this);
 			else
-				g.drawImage(whiteimg.getImage(), startx + chessMan.getX()*56 + 5, starty + chessMan.getY()*56+5, 46, 46, this);
+				g.drawImage(whiteimg.getImage(), startx + (chessMan.getX()-1)*56 + 5, starty + (chessMan.getY()-1)*56+5, 46, 46, this);
+		}
+		for(int i = 0; i< canPlace.getSize();i++)
+		{
+			ChessMan chessMan = canPlace.getChessMan(i);
+			g.drawRect(startx + (chessMan.getX()-1)*56 + 5, starty + (chessMan.getY()-1) *56 + 5, 10, 10);
 		}
 		
 	}
@@ -64,6 +70,6 @@ public class ImageChessBoard extends JPanel{
 	
 	//var
 	int startx = 178, starty = 140;
-	private ChessManList list;
+	private ChessManList list, canPlace;
 }
 

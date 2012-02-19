@@ -15,6 +15,7 @@ import java.util.ArrayList;
  */
 public class ChessManList {
 	
+	
 	public ChessManList()
 	{
 		
@@ -23,18 +24,43 @@ public class ChessManList {
 	
 	private ArrayList<ChessMan> list = new ArrayList<ChessMan>();
 	private boolean[][] black_white = new boolean[8][8];
-	private boolean[][] have_ChessMan = new boolean[8][8];
+	private boolean[][] have_ChessMan = new boolean[8][8]; 
+	int numBlack = 0;
+	int numWhite = 0;
 	
-	public void add(int x,int y, boolean black)
+	public void add(int x,int y, boolean black)//the x and y must be start from 1,1
 	{
 		x -= 1;
 		y -= 1;
+		if(have_ChessMan[x][y]) return ;
 		list.add(new ChessMan(x, y, black));
 		black_white[x][y] = black;
 		have_ChessMan[x][y] = true; 
+		if(black) numBlack++;else numWhite++;
 	}
 	
-	public int getNum()
+	public void turn(int x, int y)//the x and y must be start from 1,1
+	{
+		x -= 1;
+		y -= 1;
+		if(black_white[x][y])
+		{
+			numBlack--;
+			numWhite++;
+		}else
+		{
+			numWhite--;
+			numBlack++;
+		}
+		black_white[x][y] = !black_white[x][y];
+		for(int i = 0 ;i <list.size();i++)
+			if(list.get(i).getX() == x+1 && list.get(i).getY() == y+1)
+			{
+				list.get(i).setColor();
+			}
+	}
+	
+	public int getSize()
 	{
 		return list.size();
 	}
@@ -44,9 +70,40 @@ public class ChessManList {
 		return list.get(index);
 	}
 	
-	public boolean havaChessman(int x, int y)
+	public boolean getColor(int x,int y)//the x and y must be start from 1,1
+	{
+		return black_white[x -1][y -1];
+	}
+	
+	public boolean havaChessman(int x, int y)//the x and y must be start from 1,1
 	{
 		return have_ChessMan[x - 1][y -1];
+	}
+	
+	public int getBlackNum()
+	{
+		return numBlack;
+	}
+	
+	public int getwhiteNum()
+	{
+		return numWhite;
+	}
+	
+	public boolean isBlackWin()
+	{
+		return numBlack > numWhite ? true:false;
+	}
+	
+	public void clear()
+	{
+		list.clear();
+		for(int i = 0; i<8;i++)
+			for(int j = 0; j<8;j++)
+			{
+				black_white[i][j] = false;
+				have_ChessMan[i][j] = false;
+			}
 	}
 	
 
@@ -70,11 +127,15 @@ class ChessMan
 	}
 	public int getX()
 	{
-		return this.x;
+		return this.x +1;
 	}
 	public int getY()
 	{
-		return this.y;
+		return this.y+1;
+	}
+	public void setColor()
+	{
+		this.black = !this.black;
 	}
 	
 	//var
