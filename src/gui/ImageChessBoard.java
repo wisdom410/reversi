@@ -17,6 +17,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import core.ChessMan;
+import core.ChessManList;
+
 /*
  * 重载了JPanel 的 paint 方法，把背景图片画上。
  * 绘制黑色分割线棋盘。

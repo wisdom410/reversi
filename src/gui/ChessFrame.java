@@ -18,6 +18,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import core.ChessMan;
+import core.ChessManList;
+
 public class ChessFrame extends JFrame{
 
 	public ChessFrame()
@@ -100,7 +103,7 @@ public class ChessFrame extends JFrame{
 			//System.out.println("start= "+x+" "+y);
 			while(x +dx[i] >= 1 && y +dy[i] >= 1 && x +dx[i]<=8 && y+dy[i]<=8)
 			{
-				if(chessManList.havaChessman(x + dx[i], y + dy[i]) && chessManList.getColor(x + dx[i], y + dy[i]) != chessMan.isBlack())
+				if(chessManList.havaChessman(x + dx[i], y + dy[i]) && chessManList.isBlack(x + dx[i], y + dy[i]) != chessMan.isBlack())
 				{
 					x = x + dx[i];
 					y = y + dy[i];
@@ -119,60 +122,72 @@ public class ChessFrame extends JFrame{
 		}	
 	}
 	
+	
 	/*
-	 * 计算翻转后的棋盘
+	 * 计算放置棋子后应该反转的棋子。
 	 */
-	private void calcChessManList(int pos_x, int pos_y)
+	private ChessManList turnChessMan(ChessMan chessMan)
 	{
 		final int[] dx = {0,-1,-1,-1,0,1,1,1};
 		final int[] dy = {-1,-1,0,1,1,1,0,-1};
+		boolean can = false;
+		int x = chessMan.getX();
+		int y = chessMan.getY();
 		
-		ChessManList chess = new ChessManList();
 		
-		for(int i = 1; i<=8;i++)
-			for(int j = 1 ;j<=8;j++)
-			{
-				if(chessManList.getColor(i , j) == chessManList.getColor(pos_x, pos_y) && !(i == pos_x && j == pos_y))
+		ChessManList newList = chessManList;
+		ChessManList shouldTurn = new ChessManList();
+		
+		for(int l = 1 ;l<=8;l++)
+			for(int m = 1; m<=8;m++)
+				if(chessManList.havaChessman(l, m) && chessManList.isBlack(l, m) == chessMan.isBlack())
+				
+				for(int i = 0; i<8;i++)
 				{
-					for(int m = 0; m <8;m++)
+					x = l;
+					y = m; 
+					shouldTurn.clear();
+					can = false;
+				
+					if(x == chessMan.getX() && y == chessMan.getY()) break;
+					
+					while(x +dx[i] >= 1 && y +dy[i] >= 1 && x +dx[i]<=8 && y+dy[i]<=8)
 					{
-						
-						int x = i;
-						int y = j;
-						chess.clear();
-						
-						while(x + dx[m] >= 1 && y + dy[m] >= 1 && x + dx[m] <=8 && y +dy[m]<=8)
+						if(chessManList.havaChessman(x + dx[i], y + dy[i]) && chessManList.isBlack(x + dx[i], y + dy[i]) != chessMan.isBlack())
 						{
-							if(chessManList.havaChessman(x + dx[m], y + dy[m]) && (chessManList.getColor(x + dx[m], y + dy[m]) != chessManList.getColor(pos_x, pos_y)))
-							{
-								x = x + dx[m];
-								y = y + dy[m];
-								chess.add(x, y, !chessManList.getColor(pos_x, pos_y));
-								
-							}else
-							{
-								break;
-							}
-						}
-						
-						if(x + dx[m] == pos_x && y + dy[m] == pos_y)
+							x = x + dx[i];
+							y = y + dy[i];
+							can = true;
+							shouldTurn.add(x, y, chessMan.isBlack());
+							//System.out.println("shouldTurn:"+x+" "+y);
+						}else
 						{
-							for(int k = 0; k<chess.getSize();k++)
-							{
-								//System.out.println((chess.getChessMan(k).getX())+" "+(chess.getChessMan(k).getY()));
-								chessManList.turn(chess.getChessMan(k).getX() , chess.getChessMan(k).getY());
-							}
+							//System.out.println("break:"+x+" "+y);
+							break;
 						}
 					}
+					if((x + dx[i])==chessMan.getX() && (y + dy[i]) == chessMan.getY() && can)
+					{
+						for(int k = 0 ;k < shouldTurn.getSize();k++)
+						{
+							//System.out.println("turned:"+shouldTurn.getChessMan(k).getX()+" "+shouldTurn.getChessMan(k).getY());
+							newList.turn(shouldTurn.getChessMan(k).getX(), shouldTurn.getChessMan(k).getY());
+						}
+					}
+					
 				}
-			}
+				
+		return newList;
+		
+		
 		
 	}
+	
 	
 	//var
 	private JPanel mainPanel, rightPanel;
 	private ChessManList chessManList, canPlace;
-	private JButton loseButton, undoButton, saveButton, loadButton, pointButton;
+	private JButton loseButton, undoButton, saveButton, loadButton;
 	private int startx = 181, starty = 165;
 	private boolean black = true;
 	private int count = 0;
@@ -204,11 +219,15 @@ public class ChessFrame extends JFrame{
 			
 			if(chessManList.havaChessman(pos_x, pos_y) || !canPlace.havaChessman(pos_x, pos_y)) return ;
 			
-			chessManList.add(pos_x, pos_y, black);
+			chessManList = turnChessMan(new ChessMan(pos_x, pos_y, black));
 			
-			calcChessManList(pos_x, pos_y);
+			chessManList.add(pos_x, pos_y, black);
+			//System.out.println(pos_x+" "+pos_y);
+			
+			
 			
 			canPlace.clear();
+			
 			for(int i = 0; i< chessManList.getSize();i++)
 			{
 				if(chessManList.getChessMan(i).isBlack() != black)
@@ -225,12 +244,22 @@ public class ChessFrame extends JFrame{
 			{
 				count ++;
 				if(count <= 2)
-					System.out.println(black+"  is skip!");
-				else
-					System.out.println(chessManList.isBlackWin()+"");
+				{
+					System.out.println(!black+"  is skip!");
+					System.out.println("count="+count);
+					for(int i = 0; i< chessManList.getSize();i++)
+					{
+						if(chessManList.getChessMan(i).isBlack() == black)
+						{
+							findCanPlace(chessManList.getChessMan(i));
+						}
+					}
+				}
 				
 			}
 			
+			if(chessManList.getSize() == 64)
+				System.out.println("win="+chessManList.isBlackWin());
 			System.out.println(black);
 			
 			repaint();
