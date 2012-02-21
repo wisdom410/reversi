@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import core.ChessMan;
@@ -25,21 +26,29 @@ import core.ChessManList;
  * 绘制黑色分割线棋盘。
  * @see javax.swing.JComponent#paint(java.awt.Graphics)
  */
-public class ImageChessBoard extends JPanel{
+public class ImageChessBoard extends JComponent{
 	
-	public ImageChessBoard(ChessManList list, ChessManList canPlace)
+	public ImageChessBoard()
 	{
 		super();
+		this.setLayout(null);	
+	}
+	
+	
+	public void update(ChessManList list, ChessManList canPlace)
+	{
 		this.list = list;
 		this.canPlace = canPlace;
-		this.setLayout(null);
-		
-		
-		
-		
+		//System.out.println("listsize="+list.getSize());
 	}
+	
+	
 	public void paintComponent(Graphics g)
 	{
+		
+		
+		//System.out.println("paintComponent");
+		super.paintComponent(g);
 		ImageIcon img = new ImageIcon("res\\chess_background.png"); 
 		g.drawImage(img.getImage(), 0, 0, img.getIconWidth(), img.getIconHeight(), this);
 		
@@ -54,22 +63,29 @@ public class ImageChessBoard extends JPanel{
 		
 		ImageIcon blackimg = new ImageIcon("res\\black_ball.png");
 		ImageIcon whiteimg = new ImageIcon("res\\white_ball.png");
+		
+		int count = 0;
 		for(int i = 0; i< list.getSize();i++)
 		{
+			
+			
 			ChessMan chessMan = list.getChessMan(i);
 			if(chessMan.isBlack())
+			{count ++;
 				g.drawImage(blackimg.getImage(), startx + (chessMan.getX()-1)*56 + 5, starty + (chessMan.getY()-1)*56+5, 46, 46, this);
+			}
 			else
 				g.drawImage(whiteimg.getImage(), startx + (chessMan.getX()-1)*56 + 5, starty + (chessMan.getY()-1)*56+5, 46, 46, this);
 		}
+		
 		for(int i = 0; i< canPlace.getSize();i++)
 		{
+			
 			ChessMan chessMan = canPlace.getChessMan(i);
-			g.drawRect(startx + (chessMan.getX()-1)*56 + 5, starty + (chessMan.getY()-1) *56 + 5, 10, 10);
+			g.drawRect(startx + (chessMan.getX()-1)*56 + 5, starty + (chessMan.getY()-1) *56 + 5, 46, 46);
 		}
-		
+		//System.out.println("paint:"+count);
 	}
-	
 	
 	//var
 	int startx = 178, starty = 140;

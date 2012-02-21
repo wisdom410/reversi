@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /*
  * 描述整个棋盘的类。每个棋子都存在一个ArrayList里面，遍历ArrayList就可以找到各个棋子位置。
  */
-public class ChessManList {
+public class ChessManList  implements Cloneable{
 	
 	
 	public ChessManList()
@@ -24,8 +24,10 @@ public class ChessManList {
 	
 	private ArrayList<ChessMan> list = new ArrayList<ChessMan>();
 	private int[][] chessMan = new int[9][9];//0 -> 没有棋子.1->黑色。2->白色。
-	int numBlack = 0;
-	int numWhite = 0;
+	private int numBlack = 0;
+	private int numWhite = 0;
+	public boolean black = false;
+	
 	
 	public void add(int x,int y, boolean black)//the x and y must be start from 1,1
 	{
@@ -34,6 +36,18 @@ public class ChessManList {
 		if(black) chessMan[x][y] = 1;else chessMan[x][y] = 2;
 		if(black) numBlack++;else numWhite++;
 	}
+	
+	public void add(ChessMan c)//the x and y must be start from 1,1
+	{
+		int x = c.getX();
+		int y = c.getY();
+		boolean black = c.isBlack();
+		if(chessMan[x][y] != 0) return ;
+		list.add(new ChessMan(x, y, black));
+		if(black) chessMan[x][y] = 1;else chessMan[x][y] = 2;
+		if(black) numBlack++;else numWhite++;
+	}
+	
 	
 	public void turn(int x, int y)//the x and y must be start from 1,1
 	{
@@ -71,6 +85,12 @@ public class ChessManList {
 		return false;
 	}
 	
+	public ArrayList<ChessMan> getList()
+	{
+		return list;
+	}
+	
+	
 	public boolean havaChessman(int x, int y)//the x and y must be start from 1,1
 	{
 		if(chessMan[x][y] != 0) return true;
@@ -102,6 +122,19 @@ public class ChessManList {
 			}
 	}
 	
+	public ChessManList clone() throws CloneNotSupportedException
+	{
+		ChessManList cloned = (ChessManList) super.clone();
+		cloned.chessMan = (int[][]) chessMan.clone();
+		cloned.list = new ArrayList<ChessMan>();
+		for(ChessMan c : list)
+		{
+			cloned.list.add(c.clone());
+		}
+		cloned.numBlack = numBlack;
+		cloned.numWhite = numWhite;
+		return cloned;
+	}
 
 }
 

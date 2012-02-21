@@ -19,6 +19,7 @@ public class TestChessUI {
 		{
 			public void run()
 			{
+				
 				new ChessFrame();
 			}
 		}) ;
