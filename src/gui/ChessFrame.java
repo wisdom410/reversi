@@ -54,6 +54,7 @@ public class ChessFrame extends JFrame{
 		chessManList.add(4, 5, true);
 		chessManList.add(5, 4, true);
 		chessManList.add(5, 5, false);
+		black = true;
 		
 		canPlace = new ChessManList();
 		canPlace.add(3, 4, true);
@@ -93,9 +94,11 @@ public class ChessFrame extends JFrame{
 					}else
 					{
 						chessManList = new ChessManList();
-						chessManList.clear();
-						canPlace.clear();
 						
+						if(undoChessManList[--now_step].black)
+							black = true;
+						else
+							black = false;
 						for(ChessMan c : undoChessManList[now_step].getList())
 						{
 							chessManList.add(c);
@@ -110,14 +113,30 @@ public class ChessFrame extends JFrame{
 							}
 						}
 						
-						black = chessManList.black;
+						if(canPlace.getSize() == 0)
+						{
+							black = !black;
+							System.out.println(!black+" is skip!");
+							for(int i = 0; i< chessManList.getSize();i++)
+							{
+								if(chessManList.getChessMan(i).isBlack() != black) 
+								{
+									findCanPlace(chessManList.getChessMan(i));
+								}
+							}
+						}
+						
+						
+						black = !black;
+						
 					}
 					
 					mainPanel.update(chessManList, canPlace);
+					
 					//System.out.println(chessManList.isBlack(4, 4));
 					//System.out.println("frame_size="+chessManList.getSize());
 					mainPanel.repaint();
-					now_step--;
+					//now_step--;
 				}			
 				
 			}
@@ -256,11 +275,10 @@ public class ChessFrame extends JFrame{
 	private ImageChessBoard mainPanel;
 	private ChessManList chessManList, canPlace;
 	private ChessManList[] undoChessManList = new ChessManList[65];
-	private ChessManList[] undoCanPlace = new ChessManList[65];
 	private JButton loseButton, undoButton, saveButton, loadButton;
 	private int startx = 181, starty = 165;
 	private int mouseX,mouseY;
-	private boolean black = true;
+	private boolean black;
 	private int count = 0;
 	private int now_step = 0;
 	
@@ -294,17 +312,6 @@ public class ChessFrame extends JFrame{
 			
 			
 			if(chessManList.havaChessman(pos_x, pos_y) || !canPlace.havaChessman(pos_x, pos_y)) return ;
-
-			try {
-				undoChessManList[++now_step] = new ChessManList();
-				undoCanPlace[now_step] = new ChessManList();
-				undoChessManList[now_step] = chessManList.clone();
-				undoChessManList[now_step].black = black;
-				undoCanPlace[now_step] = canPlace.clone();
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			
 			chessManList = turnChessMan(new ChessMan(pos_x, pos_y, black));
 			
@@ -324,6 +331,7 @@ public class ChessFrame extends JFrame{
 				}
 			}
 		
+			
 			
 			if(chessManList.getSize() == 64)
 				finish();
@@ -349,6 +357,22 @@ public class ChessFrame extends JFrame{
 				if(count ==2) finish();
 				
 				
+			}
+			
+			try {
+				undoChessManList[++now_step] = new ChessManList();
+				for(ChessMan c : chessManList.getList())
+				{
+					undoChessManList[now_step].add(c.clone());
+				}
+				
+				if(!black)
+					undoChessManList[now_step].black = true;
+				else
+					undoChessManList[now_step].black = false;
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			
 			//System.out.println(black);
