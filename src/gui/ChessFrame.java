@@ -90,6 +90,7 @@ public class ChessFrame extends JFrame{
 						canPlace.add(6, 5, true);
 						canPlace.add(5, 6, true);
 						black = true;
+						now_step = 0;
 						
 					}else
 					{
