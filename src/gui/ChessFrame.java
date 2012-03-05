@@ -2,7 +2,7 @@
 ID: lazydom1
 LANG: JAVA
 TASK: ChessFrame.java
-Created on: 2012-2-18-ÏÂÎç7:57:13
+Created on: 2012-2-18-ä¸‹åˆ7:57:13
 Author: lazydomino@163.com(pisces)
 */
 
@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,26 +29,26 @@ public class ChessFrame extends JFrame{
 	public ChessFrame()
 	{
 		super();
-		
-		this.setTitle("ºÚ°×Æå");
+
+		this.setTitle("é»‘ç™½æ£‹");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		ImageIcon ico = new ImageIcon("res\\ico.png");
+		ImageIcon ico = new ImageIcon("res"+File.separator+"ico.png");
 		this.setIconImage(ico.getImage());
 		this.setLayout(new BorderLayout());
 		this.setVisible(true);
 		this.setMinimumSize(new Dimension(1024, 730));
 		this.setMaximumSize(new Dimension(1024, 730));
 		this.setResizable(false);
-		
+
 		addPanel();
-		
+
 	}
 	/*
 	 * add the mainPanel and the rightPanel include the chatPanel and the players' information panel.
 	 */
 	private void addPanel()
 	{
-		
+
 
 		chessManList = new ChessManList();
 		chessManList.add(4, 4, false);
@@ -55,47 +56,47 @@ public class ChessFrame extends JFrame{
 		chessManList.add(5, 4, true);
 		chessManList.add(5, 5, false);
 		black = true;
-		
+
 		canPlace = new ChessManList();
 		canPlace.add(3, 4, true);
 		canPlace.add(4, 3, true);
 		canPlace.add(6, 5, true);
 		canPlace.add(5, 6, true);
-		
-		
+
+
 		mainPanel = new ImageChessBoard();
 		mainPanel.update(chessManList, canPlace);
-		undoButton = new JButton("»ÚÆå");
+		undoButton = new JButton("æ‚”æ£‹");
 		undoButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				if(now_step > 0)
 				{
-					
+
 					chessManList.clear();
 					canPlace.clear();
-					
+
 					if(now_step == 1)
 					{
-						
+
 						chessManList.add(4, 4, false);
 						chessManList.add(4, 5, true);
 						chessManList.add(5, 4, true);
 						chessManList.add(5, 5, false);
-						
+
 						canPlace.add(3, 4, true);
 						canPlace.add(4, 3, true);
 						canPlace.add(6, 5, true);
 						canPlace.add(5, 6, true);
 						black = true;
 						now_step = 0;
-						
+
 					}else
 					{
 						chessManList = new ChessManList();
-						
+
 						if(undoChessManList[--now_step].black)
 							black = true;
 						else
@@ -103,9 +104,9 @@ public class ChessFrame extends JFrame{
 						for(ChessMan c : undoChessManList[now_step].getList())
 						{
 							chessManList.add(c);
-							
+
 						}
-					
+
 						for(int i = 0; i< chessManList.getSize();i++)
 						{
 							if(chessManList.getChessMan(i).isBlack() != black) 
@@ -113,7 +114,7 @@ public class ChessFrame extends JFrame{
 								findCanPlace(chessManList.getChessMan(i));
 							}
 						}
-						
+
 						if(canPlace.getSize() == 0)
 						{
 							black = !black;
@@ -126,28 +127,28 @@ public class ChessFrame extends JFrame{
 								}
 							}
 						}
-						
-						
+
+
 						black = !black;
-						
+
 					}
-					
+
 					mainPanel.update(chessManList, canPlace);
-					
+
 					//System.out.println(chessManList.isBlack(4, 4));
 					//System.out.println("frame_size="+chessManList.getSize());
 					mainPanel.repaint();
 					//now_step--;
 				}			
-				
+
 			}
 		});
-		loseButton = new JButton("ÈÏÊä");
-		saveButton = new JButton("±£´æ");
-		loadButton = new JButton("¼ÓÔØ");
-		
+		loseButton = new JButton("è®¤è¾“");
+		saveButton = new JButton("ä¿å­˜");
+		loadButton = new JButton("åŠ è½½");
+
 		JPanel downPanel = new JPanel();
-		
+
 		downPanel.add(undoButton);
 		downPanel.add(loseButton);
 		downPanel.add(saveButton);
@@ -156,16 +157,16 @@ public class ChessFrame extends JFrame{
 		mainPanel.add(downPanel);
 		this.addMouseListener(new MouseAction());
 		this.add(mainPanel);
-		
-		
+
+
 		rightPanel = new RightJPanel();
 		this.add(rightPanel, BorderLayout.EAST);
-		
+
 	}
-	
-	
+
+
 	/*
-	 * ¼ÆËã¿ÉÒÔ·ÅÖÃÆå×ÓµÄµØ·½¡£
+	 * è®¡ç®—å¯ä»¥æ”¾ç½®æ£‹å­çš„åœ°æ–¹ã€‚
 	 */
 	private void findCanPlace(ChessMan chessMan)
 	{
@@ -174,7 +175,7 @@ public class ChessFrame extends JFrame{
 		boolean can = false;
 		int x = chessMan.getX();
 		int y = chessMan.getY();
-		
+
 		for(int i = 0; i<8;i++)
 		{
 			can = false;
@@ -201,10 +202,10 @@ public class ChessFrame extends JFrame{
 			}
 		}	
 	}
-	
-	
+
+
 	/*
-	 * ¼ÆËã·ÅÖÃÆå×ÓºóÓ¦¸Ã·´×ªµÄÆå×Ó¡£
+	 * è®¡ç®—æ”¾ç½®æ£‹å­åŽåº”è¯¥åè½¬çš„æ£‹å­ã€‚
 	 */
 	private ChessManList turnChessMan(ChessMan chessMan)
 	{
@@ -213,24 +214,24 @@ public class ChessFrame extends JFrame{
 		boolean can = false;
 		int x = chessMan.getX();
 		int y = chessMan.getY();
-		
-		
+
+
 		ChessManList newList = chessManList;
 		ChessManList shouldTurn = new ChessManList();
-		
+
 		for(int l = 1 ;l<=8;l++)
 			for(int m = 1; m<=8;m++)
 				if(chessManList.havaChessman(l, m) && chessManList.isBlack(l, m) == chessMan.isBlack())
-				
+
 				for(int i = 0; i<8;i++)
 				{
 					x = l;
 					y = m; 
 					shouldTurn.clear();
 					can = false;
-				
+
 					if(x == chessMan.getX() && y == chessMan.getY()) break;
-					
+
 					while(x +dx[i] >= 1 && y +dy[i] >= 1 && x +dx[i]<=8 && y+dy[i]<=8)
 					{
 						if(chessManList.havaChessman(x + dx[i], y + dy[i]) && chessManList.isBlack(x + dx[i], y + dy[i]) != chessMan.isBlack())
@@ -254,23 +255,23 @@ public class ChessFrame extends JFrame{
 							newList.turn(shouldTurn.getChessMan(k).getX(), shouldTurn.getChessMan(k).getY());
 						}
 					}
-					
+
 				}
-				
+
 		return newList;
-		
-		
-		
+
+
+
 	}
-	
-	
-	
+
+
+
 	public void finish()
 	{
 		System.out.println("win="+chessManList.isBlackWin());
 	}
-	
-	
+
+
 	//var
 	private JPanel  rightPanel;
 	private ImageChessBoard mainPanel;
@@ -282,48 +283,48 @@ public class ChessFrame extends JFrame{
 	private boolean black;
 	private int count = 0;
 	private int now_step = 0;
-	
-	
+
+
 	class MouseAction extends MouseAdapter 
 	{
 		public void mousePressed(MouseEvent event)
 		{
-			
+
 			mouseX = event.getX();
 			mouseY = event.getY();
-			
-			
-			
+
+
+
 			int x = mouseX;
 			int y = mouseY;
-			
+
 			//System.out.println(x+" "+y);
 			if(x <= startx || y <= starty || x >= 628 || y >=	612) return ;
-			
-			
+
+
 			x -= startx;
 			y -= starty;
-			
+
 			int pos_x = 1;
 			int pos_y = 1;
-			
+
 			pos_x += x / 56;
 			pos_y += y / 56;
-			
-			
-			
+
+
+
 			if(chessManList.havaChessman(pos_x, pos_y) || !canPlace.havaChessman(pos_x, pos_y)) return ;
-			
+
 			chessManList = turnChessMan(new ChessMan(pos_x, pos_y, black));
-			
+
 			chessManList.add(pos_x, pos_y, black);
 			mainPanel.update(chessManList, canPlace);
 			//System.out.println(pos_x+" "+pos_y);
-			
-			
-			
+
+
+
 			canPlace.clear();
-			
+
 			for(int i = 0; i< chessManList.getSize();i++)
 			{
 				if(chessManList.getChessMan(i).isBlack() != black) 
@@ -331,12 +332,12 @@ public class ChessFrame extends JFrame{
 					findCanPlace(chessManList.getChessMan(i));
 				}
 			}
-		
-			
-			
+
+
+
 			if(chessManList.getSize() == 64)
 				finish();
-			
+
 			if(canPlace.getSize() != 0)
 			{
 				black = !black;
@@ -356,17 +357,17 @@ public class ChessFrame extends JFrame{
 				if(canPlace.getSize() ==0)
 					count ++;
 				if(count ==2) finish();
-				
-				
+
+
 			}
-			
+
 			try {
 				undoChessManList[++now_step] = new ChessManList();
 				for(ChessMan c : chessManList.getList())
 				{
 					undoChessManList[now_step].add(c.clone());
 				}
-				
+
 				if(!black)
 					undoChessManList[now_step].black = true;
 				else
@@ -375,12 +376,11 @@ public class ChessFrame extends JFrame{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			//System.out.println(black);
-			
+
 			mainPanel.repaint();
-			
+
 		}
 	}
 }
-

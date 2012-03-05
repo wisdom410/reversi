@@ -2,14 +2,14 @@
 ID: lazydom1
 LANG: JAVA
 TASK: ChessMan.java
-Created on: 2012-2-20-ÏÂÎç5:30:09
+Created on: 2012-2-20-ä¸‹åˆ5:30:09
 Author: lazydomino@163.com(pisces)
 */
 
 package core;
 
 /*
- * ÃèÊöÆå×ÓµÄÀà£¬ÒòÎªÆåÅÌÊÇ 8*8 µÄ£¬ËùÒÔÎªÁË·½±ãÖ±½ÓÓÃ i£¬j×ø±ê£¬×ø±ê¶¼ÊÇ´Ó[1,1]¿ªÊ¼[8,8]½áÊø¡£
+ * æè¿°æ£‹å­çš„ç±»ï¼Œå› ä¸ºæ£‹ç›˜æ˜¯ 8*8 çš„ï¼Œæ‰€ä»¥ä¸ºäº†æ–¹ä¾¿ç›´æ¥ç”¨ iï¼Œjåæ ‡ï¼Œåæ ‡éƒ½æ˜¯ä»[1,1]å¼€å§‹[8,8]ç»“æŸã€‚
  */
 public class ChessMan implements Cloneable
 {	
@@ -19,7 +19,7 @@ public class ChessMan implements Cloneable
 		this.y = y;
 		this.black = black;
 	}
-	
+
 	public boolean isBlack()
 	{
 		return black;
@@ -46,5 +46,5 @@ public class ChessMan implements Cloneable
 	}
 	//var
 	private int x, y;
-	private boolean black;//¼ÇÂ¼Æå×ÓÑÕÉ«
+	private boolean black;//è®°å½•æ£‹å­é¢œè‰²
 }

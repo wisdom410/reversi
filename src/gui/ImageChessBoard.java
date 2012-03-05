@@ -2,7 +2,7 @@
 ID: lazydom1
 LANG: JAVA
 TASK: ImageJPanel.java
-Created on: 2012-2-19-ÉÏÎç10:17:59
+Created on: 2012-2-19-ä¸Šåˆ10:17:59
 Author: lazydomino@163.com(pisces)
 */
 
@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -22,53 +23,53 @@ import core.ChessMan;
 import core.ChessManList;
 
 /*
- * ÖØÔØÁËJPanel µÄ paint ·½·¨£¬°Ñ±³¾°Í¼Æ¬»­ÉÏ¡£
- * »æÖÆºÚÉ«·Ö¸îÏßÆåÅÌ¡£
+ * é‡è½½äº†JPanel çš„ paint æ–¹æ³•ï¼ŒæŠŠèƒŒæ™¯å›¾ç‰‡ç”»ä¸Šã€‚
+ * ç»˜åˆ¶é»‘è‰²åˆ†å‰²çº¿æ£‹ç›˜ã€‚
  * @see javax.swing.JComponent#paint(java.awt.Graphics)
  */
 public class ImageChessBoard extends JComponent{
-	
+
 	public ImageChessBoard()
 	{
 		super();
 		this.setLayout(null);	
 	}
-	
-	
+
+
 	public void update(ChessManList list, ChessManList canPlace)
 	{
 		this.list = list;
 		this.canPlace = canPlace;
 		//System.out.println("listsize="+list.getSize());
 	}
-	
-	
+
+
 	public void paintComponent(Graphics g)
 	{
-		
-		
+
+
 		//System.out.println("paintComponent");
 		super.paintComponent(g);
-		ImageIcon img = new ImageIcon("res\\chess_background.png"); 
+		ImageIcon img = new ImageIcon("res"+File.separator+"chess_background.png"); 
 		g.drawImage(img.getImage(), 0, 0, img.getIconWidth(), img.getIconHeight(), this);
-		
-		ImageIcon chessBoard = new ImageIcon("res\\chess_board.png");
+
+		ImageIcon chessBoard = new ImageIcon("res"+File.separator+"chess_board.png");
 		g.drawImage(chessBoard.getImage(), 160, 120, chessBoard.getIconWidth(), chessBoard.getIconHeight(), this);
-		
+
 		for(int i = 0; i<8;i++)
 			for(int j = 0; j<8;j++)
 			{
 				g.drawRect(startx + i * 56, starty + j * 56, 56, 56);
 			}
-		
-		ImageIcon blackimg = new ImageIcon("res\\black_ball.png");
-		ImageIcon whiteimg = new ImageIcon("res\\white_ball.png");
-		
+
+		ImageIcon blackimg = new ImageIcon("res"+File.separator+"black_ball.png");
+		ImageIcon whiteimg = new ImageIcon("res"+File.separator+"white_ball.png");
+
 		int count = 0;
 		for(int i = 0; i< list.getSize();i++)
 		{
-			
-			
+
+
 			ChessMan chessMan = list.getChessMan(i);
 			if(chessMan.isBlack())
 			{count ++;
@@ -77,18 +78,17 @@ public class ImageChessBoard extends JComponent{
 			else
 				g.drawImage(whiteimg.getImage(), startx + (chessMan.getX()-1)*56 + 5, starty + (chessMan.getY()-1)*56+5, 46, 46, this);
 		}
-		
+
 		for(int i = 0; i< canPlace.getSize();i++)
 		{
-			
+
 			ChessMan chessMan = canPlace.getChessMan(i);
 			g.drawRect(startx + (chessMan.getX()-1)*56 + 5, starty + (chessMan.getY()-1) *56 + 5, 46, 46);
 		}
 		//System.out.println("paint:"+count);
 	}
-	
+
 	//var
 	int startx = 178, starty = 140;
 	private ChessManList list, canPlace;
 }
-

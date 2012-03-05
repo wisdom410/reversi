@@ -2,7 +2,7 @@
 ID: lazydom1
 LANG: JAVA
 TASK: Main.java
-Created on: 2012-2-18-œ¬ŒÁ7:51:42
+Created on: 2012-2-18-√è√Ç√é√ß7:51:42
 Author: lazydomino@163.com(pisces)
 */
 
@@ -18,9 +18,8 @@ public class Main {
 		{
 			public void run()
 			{
-				
+
 			}
 		}) ;
 	}
 }
-

@@ -2,7 +2,7 @@
 ID: lazydom1
 LANG: JAVA
 TASK: ChessMan.java
-Created on: 2012-2-19-ÉÏÎç11:34:11
+Created on: 2012-2-19-ä¸Šåˆ11:34:11
 Author: lazydomino@163.com(pisces)
 */
 
@@ -11,24 +11,24 @@ package core;
 import java.util.ArrayList;
 
 /*
- * ÃèÊöÕû¸öÆåÅÌµÄÀà¡£Ã¿¸öÆå×Ó¶¼´æÔÚÒ»¸öArrayListÀïÃæ£¬±éÀúArrayList¾Í¿ÉÒÔÕÒµ½¸÷¸öÆå×ÓÎ»ÖÃ¡£
+ * æè¿°æ•´ä¸ªæ£‹ç›˜çš„ç±»ã€‚æ¯ä¸ªæ£‹å­éƒ½å­˜åœ¨ä¸€ä¸ªArrayListé‡Œé¢ï¼Œéå†ArrayListå°±å¯ä»¥æ‰¾åˆ°å„ä¸ªæ£‹å­ä½ç½®ã€‚
  */
 public class ChessManList  implements Cloneable{
-	
-	
+
+
 	public ChessManList()
 	{
-		
+
 	}
 	//var
-	
+
 	private ArrayList<ChessMan> list = new ArrayList<ChessMan>();
-	private int[][] chessMan = new int[9][9];//0 -> Ã»ÓĞÆå×Ó.1->ºÚÉ«¡£2->°×É«¡£
+	private int[][] chessMan = new int[9][9];//0 -> æ²¡æœ‰æ£‹å­.1->é»‘è‰²ã€‚2->ç™½è‰²ã€‚
 	private int numBlack = 0;
 	private int numWhite = 0;
 	public boolean black = false;
-	
-	
+
+
 	public void add(int x,int y, boolean black)//the x and y must be start from 1,1
 	{
 		if(chessMan[x][y] != 0) return ;
@@ -36,7 +36,7 @@ public class ChessManList  implements Cloneable{
 		if(black) chessMan[x][y] = 1;else chessMan[x][y] = 2;
 		if(black) numBlack++;else numWhite++;
 	}
-	
+
 	public void add(ChessMan c)//the x and y must be start from 1,1
 	{
 		int x = c.getX();
@@ -47,8 +47,8 @@ public class ChessManList  implements Cloneable{
 		if(black) chessMan[x][y] = 1;else chessMan[x][y] = 2;
 		if(black) numBlack++;else numWhite++;
 	}
-	
-	
+
+
 	public void turn(int x, int y)//the x and y must be start from 1,1
 	{
 		if(chessMan[x][y] == 1)
@@ -68,50 +68,50 @@ public class ChessManList  implements Cloneable{
 				list.get(i).setColor();
 			}
 	}
-	
+
 	public int getSize()
 	{
 		return list.size();
 	}
-	
+
 	public ChessMan getChessMan(int index)
 	{
 		return list.get(index);
 	}
-	
+
 	public boolean isBlack(int x,int y)//
 	{
 		if(chessMan[x][y] == 1) return true;
 		return false;
 	}
-	
+
 	public ArrayList<ChessMan> getList()
 	{
 		return list;
 	}
-	
-	
+
+
 	public boolean havaChessman(int x, int y)//the x and y must be start from 1,1
 	{
 		if(chessMan[x][y] != 0) return true;
 		return false;
 	}
-	
+
 	public int getBlackNum()
 	{
 		return numBlack;
 	}
-	
+
 	public int getwhiteNum()
 	{
 		return numWhite;
 	}
-	
+
 	public boolean isBlackWin()
 	{
 		return numBlack > numWhite ? true:false;
 	}
-	
+
 	public void clear()
 	{
 		list.clear();
@@ -121,7 +121,7 @@ public class ChessManList  implements Cloneable{
 				chessMan[i][j] = 0;
 			}
 	}
-	
+
 	public ChessManList clone() throws CloneNotSupportedException
 	{
 		ChessManList cloned = (ChessManList) super.clone();
@@ -137,4 +137,3 @@ public class ChessManList  implements Cloneable{
 	}
 
 }
-

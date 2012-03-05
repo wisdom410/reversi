@@ -2,7 +2,7 @@
 ID: lazydom1
 LANG: JAVA
 TASK: ChessMan.java
-Created on: 2012-2-19-ÉÏÎç11:34:11
+Created on: 2012-2-19-ä¸Šåˆ11:34:11
 Author: lazydomino@163.com(pisces)
 */
 
@@ -11,23 +11,23 @@ package gui;
 import java.util.ArrayList;
 
 /*
- * ÃèÊöÕû¸öÆåÅÌµÄÀà¡£Ã¿¸öÆå×Ó¶¼´æÔÚÒ»¸öArrayListÀïÃæ£¬±éÀúArrayList¾Í¿ÉÒÔÕÒµ½¸÷¸öÆå×ÓÎ»ÖÃ¡£
+ * æè¿°æ•´ä¸ªæ£‹ç›˜çš„ç±»ã€‚æ¯ä¸ªæ£‹å­éƒ½å­˜åœ¨ä¸€ä¸ªArrayListé‡Œé¢ï¼Œéå†ArrayListå°±å¯ä»¥æ‰¾åˆ°å„ä¸ªæ£‹å­ä½ç½®ã€‚
  */
 public class ChessManList {
-	
-	
+
+
 	public ChessManList()
 	{
-		
+
 	}
 	//var
-	
+
 	private ArrayList<ChessMan> list = new ArrayList<ChessMan>();
 	private boolean[][] black_white = new boolean[8][8];
 	private boolean[][] have_ChessMan = new boolean[8][8]; 
 	int numBlack = 0;
 	int numWhite = 0;
-	
+
 	public void add(int x,int y, boolean black)//the x and y must be start from 1,1
 	{
 		x -= 1;
@@ -38,7 +38,7 @@ public class ChessManList {
 		have_ChessMan[x][y] = true; 
 		if(black) numBlack++;else numWhite++;
 	}
-	
+
 	public void turn(int x, int y)//the x and y must be start from 1,1
 	{
 		x -= 1;
@@ -59,42 +59,42 @@ public class ChessManList {
 				list.get(i).setColor();
 			}
 	}
-	
+
 	public int getSize()
 	{
 		return list.size();
 	}
-	
+
 	public ChessMan getChessMan(int index)
 	{
 		return list.get(index);
 	}
-	
+
 	public boolean getColor(int x,int y)//the x and y must be start from 1,1
 	{
 		return black_white[x -1][y -1];
 	}
-	
+
 	public boolean havaChessman(int x, int y)//the x and y must be start from 1,1
 	{
 		return have_ChessMan[x - 1][y -1];
 	}
-	
+
 	public int getBlackNum()
 	{
 		return numBlack;
 	}
-	
+
 	public int getwhiteNum()
 	{
 		return numWhite;
 	}
-	
+
 	public boolean isBlackWin()
 	{
 		return numBlack > numWhite ? true:false;
 	}
-	
+
 	public void clear()
 	{
 		list.clear();
@@ -105,12 +105,12 @@ public class ChessManList {
 				have_ChessMan[i][j] = false;
 			}
 	}
-	
+
 
 }
 
 /*
- * ÃèÊöÆå×ÓµÄÀà£¬ÒòÎªÆåÅÌÊÇ 8*8 µÄ£¬ËùÒÔÎªÁË·½±ãÖ±½ÓÓÃ i£¬j×ø±ê£¬ÀıÈç [1,2]´ú±íC2ÉÏµÄÆå×Ó¡£ 
+ * æè¿°æ£‹å­çš„ç±»ï¼Œå› ä¸ºæ£‹ç›˜æ˜¯ 8*8 çš„ï¼Œæ‰€ä»¥ä¸ºäº†æ–¹ä¾¿ç›´æ¥ç”¨ iï¼Œjåæ ‡ï¼Œä¾‹å¦‚ [1,2]ä»£è¡¨C2ä¸Šçš„æ£‹å­ã€‚ 
  */
 class ChessMan
 {	
@@ -120,7 +120,7 @@ class ChessMan
 		this.y = y ;
 		this.black = black;
 	}
-	
+
 	public boolean isBlack()
 	{
 		return black;
@@ -137,8 +137,8 @@ class ChessMan
 	{
 		this.black = !this.black;
 	}
-	
+
 	//var
 	private int x, y;
-	private boolean black;//¼ÇÂ¼Æå×ÓÑÕÉ«
+	private boolean black;//è®°å½•æ£‹å­é¢œè‰²
 }
