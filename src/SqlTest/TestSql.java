@@ -11,17 +11,12 @@ package SqlTest;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
-import java.io.ObjectInputStream.GetField;
 public class TestSql {
 
 	public static void main(String[] args) throws IOException, SQLException {
 		
-		
 		runTest();
-		
 	}
-	
-	
 	
 	public static void runTest() throws IOException, SQLException
 	{
@@ -48,7 +43,6 @@ public class TestSql {
 		}
 		
 	}
-	
 	
 	public static Connection getConnection() throws IOException, SQLException
 	{
