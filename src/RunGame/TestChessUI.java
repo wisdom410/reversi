@@ -2,7 +2,7 @@
 ID: lazydom1
 LANG: JAVA
 TASK: TestChessUI.java
-Created on: 2012-2-18-обнГ7:56:44
+Created on: 2012-2-18-О©╫О©╫О©╫О©╫7:56:44
 Author: lazydomino@163.com(pisces)
 */
 
@@ -20,9 +20,11 @@ public class TestChessUI {
 			public void run()
 			{
 				
+				//System.out.println("\u7880");
 				new ChessFrame();
 			}
 		}) ;
+		
 	}
 }
 

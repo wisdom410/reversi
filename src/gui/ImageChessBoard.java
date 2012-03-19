@@ -8,16 +8,11 @@ Author: lazydomino@163.com(pisces)
 
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
 import core.ChessMan;
 import core.ChessManList;
@@ -72,7 +67,8 @@ public class ImageChessBoard extends JComponent{
 
 			ChessMan chessMan = list.getChessMan(i);
 			if(chessMan.isBlack())
-			{count ++;
+			{
+				count ++;
 				g.drawImage(blackimg.getImage(), startx + (chessMan.getX()-1)*56 + 5, starty + (chessMan.getY()-1)*56+5, 46, 46, this);
 			}
 			else

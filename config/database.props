@@ -1,0 +1,4 @@
+jdbc.drivers=com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://211.87.224.204:3306/test
+jdbc.username=test
+jdbc.password=bchine
