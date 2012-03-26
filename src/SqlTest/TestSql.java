@@ -25,20 +25,21 @@ public class TestSql {
 		
 		try
 		{
-			Statement state = con.createStatement();
+			state = con.createStatement();
 			
-			state.executeUpdate("CREATE TABLE Greetings (Message CHAR(20))");
+			state.execute("CREATE TABLE Greetings (Message CHAR(20))");
 			state.executeUpdate("INSERT INTO Greetings VALUES('Hello world!')");
 			
 			ResultSet result = state.executeQuery("SELECT * FROM Greetings");
-			if(result.next())
+			while(result.next())
 			{
 				System.out.println(result.getString(1));
 			}
 			result.close();
-			state.executeUpdate("DROP TABLE Greetings");
+			
 		}finally
 		{
+			state.executeUpdate("DROP TABLE Greetings");
 			con.close();
 		}
 		
@@ -61,4 +62,8 @@ public class TestSql {
 		return DriverManager.getConnection(url, username, passwd);
 		
 	}
+	
+	
+	//var
+	static Statement state;
 }
