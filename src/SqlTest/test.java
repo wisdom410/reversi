@@ -13,20 +13,34 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import sql.ExecSql;
-
+import java.util.*;
 public class test {
 
 	public static void main(String[] args) throws IOException, SQLException {
 		
+		Scanner cin = new Scanner(System.in);
 		ExecSql execsql = new ExecSql();
 		
-		execsql.state.execute("INSERT INTO Greetings VALUES('Hello world!')");
+	while(cin.hasNext())
+	{
+		String ab = cin.nextLine();
+		String cmd = cin.nextLine();
 		
-		ResultSet result = execsql.state.executeQuery("SELECT * FROM Greetings");
+		
+		
+		//execsql.state.execute("INSERT INTO Greetings VALUES('Hello world!')");
+		if(ab.equals("q"))
+		{
+		ResultSet result = execsql.state.executeQuery(cmd);
 		
 		while(result.next())
 		{
-			System.out.println(result.getBytes(1));
+			System.out.println(result.getString(1));
+		}
+		}else
+		{
+			execsql.state.execute(cmd);
 		}
 	}
+}
 }
