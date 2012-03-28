@@ -8,7 +8,7 @@ Author: lazydomino[AT]163.com(pisces)
 
 package net;
 
-public class UndoChessClass extends IDNetClass{
+public class UndoChessClass extends IDNet{
 
 	public UndoChessClass(boolean can)
 	{

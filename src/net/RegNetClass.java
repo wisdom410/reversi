@@ -11,7 +11,7 @@ package net;
 /*
  * 这个类是用来封装注册信息的类，用于注册客户端和服务器之间传输注册信息
  */
-public class RegNetClass extends IDNetClass{
+public class RegNetClass extends IDNet{
 
 	public RegNetClass(String username, char[] passwd,int sex, String nickname, String email,int score, int image)
 	{

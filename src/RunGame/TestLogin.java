@@ -11,6 +11,7 @@ package RunGame;
 import gui.Login;
 
 import java.awt.EventQueue;
+import java.io.IOException;
 
 public class TestLogin {
 
@@ -21,7 +22,12 @@ public class TestLogin {
 			{
 				
 				//System.out.println("\u7880");
-				new Login();
+				try {
+					new Login();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}) ;
 		

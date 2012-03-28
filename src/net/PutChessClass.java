@@ -8,7 +8,7 @@ Author: lazydomino[AT]163.com(pisces)
 
 package net;
 
-public class PutChessClass extends IDNetClass{
+public class PutChessClass extends IDNet{
 
 	
 	public PutChessClass(int x,int y)

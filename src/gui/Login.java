@@ -12,9 +12,12 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -23,15 +26,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import net.LoginNetClass;
+import net.LoginNet;
 
 public class Login extends JFrame{
 
-	public Login()
+	public Login() throws IOException
 	{
 		super();
 		this.setTitle("登录网络版黑白棋");
@@ -43,7 +47,39 @@ public class Login extends JFrame{
 		this.setMaximumSize(new Dimension(300, 200));
 		this.setResizable(false);
 		add();
-		this.add(panel);
+		
+	}
+	
+	/*
+	 * 
+	 */
+	private void setHide()
+	{
+		this.setVisible(false);
+	}
+	/*
+	 * 对话框
+	 */
+	private void showDialog(String str)
+	{
+		optionPanel = new JOptionPane();
+		optionPanel.showMessageDialog(this, str);
+
+	}
+	
+	/*
+	 * 连接服务器
+	 */
+	private void connect() 
+	{
+		
+		s = new Socket();
+		try {
+			s.connect(new InetSocketAddress("localhost", 8090),3000);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
 	}
 	
 	
@@ -86,28 +122,70 @@ public class Login extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 			
+				connect();
+				
 				String user = usernameField.getText().trim();
 				char[] pass = passwdField.getPassword();
+								
+				LoginNet login = new LoginNet(user, pass);
 				
-				if(user.equals("-1"))
-					user = "-1";
+				//in= new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
+				//out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
 				
-				LoginNetClass login = new LoginNetClass(user, pass);
-				
-				Socket s = new Socket();
 				try {
 					
-					s.connect(new InetSocketAddress("localhost",8090), 500);
-					
-					ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+					out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
 					
 					out.writeObject(login);
 					out.flush();
 					
+					in = new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
+					
+					LoginNet back = (LoginNet) in.readObject();
+					out.close();
+					in.close();
+					
+					if(back.getStatus()==0)
+					{
+						showDialog("登录成功");						
+					}
+					if(back.getStatus()==1)
+					{
+						showDialog("用户名或密码错误");
+					}
+					
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					showDialog("服务器连接失败");
+					//e1.printStackTrace();
+				}catch (ClassNotFoundException e2)
+				{
+					e2.printStackTrace();
+				}finally
+				{
+					try {
+						s.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
+				
+				
+				
+			}
+		});
+		
+		reg.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+			new Register();
+			//setHide();
+			
+			
+				
 				
 			}
 		});
@@ -117,11 +195,15 @@ public class Login extends JFrame{
 		
 		panel.add(login);
 		panel.add(reg);
-		
+		this.add(panel);
 		
 	}
 	
 	
-	JPanel panel;
+	private static JPanel panel;
+	private static ObjectInputStream in;
+	private static ObjectOutputStream out;
+	private static Socket s;
+	private static JOptionPane optionPanel;
 	
 }

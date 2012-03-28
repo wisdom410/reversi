@@ -8,11 +8,13 @@ Author: lazydomino[AT]163.com(pisces)
 
 package server;
 
+import java.sql.SQLException;
+
 public class RunServer {
 
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		
 		new ServerMain();
 	}

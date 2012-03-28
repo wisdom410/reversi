@@ -17,28 +17,32 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-public class ExecSql {
+public  class ExecSql {
 
 
-	public ExecSql() throws IOException, SQLException 
+	public ExecSql()
+	{
+		
+	}
+	
+	public static void connected() throws IOException, SQLException
 	{
 		connect();
 	}
 	
-	
-	public void close() throws SQLException
+	public static void close() throws SQLException
 	{
 		con.close();
 	}
 	
-	private void connect() throws IOException, SQLException
+	private static void connect() throws IOException, SQLException
 	{
 		con = getConnection();
 		state = con.createStatement();
 	}
 	
 	
-	private  Connection getConnection() throws IOException, SQLException
+	private static Connection getConnection() throws IOException, SQLException
 	{
 		Properties props = new Properties();
 		FileInputStream in = new FileInputStream("config"+File.separator+"database.props");
@@ -58,6 +62,6 @@ public class ExecSql {
 	
 	
 	//var
-	public Statement state;
-	Connection con;
+	public static Statement state;
+	private static Connection con;
 }
