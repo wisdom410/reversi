@@ -33,6 +33,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import core.User;
+
 import net.LoginNet;
 
 public class Login extends JFrame{
@@ -52,13 +54,6 @@ public class Login extends JFrame{
 		
 	}
 	
-	/*
-	 * 
-	 */
-	private void setHide()
-	{
-		this.setVisible(false);
-	}
 	/*
 	 * 对话框
 	 */
@@ -98,10 +93,8 @@ public class Login extends JFrame{
 	private void login()
 	{
 		dispose();
-		
-		
-		
-		
+		new Hall(username);
+		//showDialog("OK");
 	}
 	
 	/*
@@ -115,17 +108,17 @@ public class Login extends JFrame{
 		final JTextField usernameField = new JTextField();
 		final JPasswordField passwdField = new JPasswordField();
 		
-		JLabel username = new JLabel("用户名:  ");
-		JLabel userpasswd = new JLabel("密码:     ");
+		JLabel usernameLabel = new JLabel("用户名:  ");
+		JLabel userpasswdLabel = new JLabel("密码:     ");
 		
 		JPanel userPanel = new JPanel();
 		userPanel.setLayout(new BorderLayout());
-		userPanel.add(username,BorderLayout.WEST);
+		userPanel.add(usernameLabel,BorderLayout.WEST);
 		userPanel.add(usernameField);
 		
 		JPanel passwdPanel = new JPanel();
 		passwdPanel.setLayout(new BorderLayout());
-		passwdPanel.add(userpasswd,BorderLayout.WEST);
+		passwdPanel.add(userpasswdLabel,BorderLayout.WEST);
 		passwdPanel.add(passwdField);
 		
 		userPanel.setBounds(40, 40, 200, 20);
@@ -144,16 +137,17 @@ public class Login extends JFrame{
 				// TODO Auto-generated method stub
 			
 				
-				String user = usernameField.getText().trim();
+				username = usernameField.getText().trim();
 				char[] pass = passwdField.getPassword();
 				
-				if(user.length()==0||pass.length==0)
+				if(username.length()==0||pass.length==0)
 				{
 					showDialog("用户名或密码不能为空!");
 					return;
 				}
 				
-				LoginNet login = new LoginNet(user, pass);
+				
+				LoginNet login = new LoginNet(username,pass);
 			
 				
 				//in= new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
@@ -234,5 +228,6 @@ public class Login extends JFrame{
 	private static ObjectOutputStream out;
 	private static Socket s;
 	private static JOptionPane optionPanel;
+	private String username;
 	
 }

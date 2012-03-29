@@ -34,6 +34,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import core.User;
+
 import net.LoginNet;
 import net.RegNet;
 
@@ -97,7 +99,7 @@ public class Register extends JFrame{
 					}
 					
 					
-					RegNet reg = new RegNet(username, passwd, sex, nickname, email, 0,sex);
+					RegNet reg = new RegNet(username,passwd,sex,nickname,email,0,sex);
 					
 					out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
 					

@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import core.ChessMan;
 import core.ChessManList;
 
+
 public class ChessFrame extends JFrame{
 
 	public ChessFrame()
@@ -388,9 +389,15 @@ public class ChessFrame extends JFrame{
 			}
 
 
+			
+			
+			mainPanel.repaint();
 
 			if(chessManList.getSize() == 64)
+			{
 				finish();
+				return;
+			}
 
 			if(canPlace.getSize() != 0)
 			{
@@ -410,7 +417,11 @@ public class ChessFrame extends JFrame{
 				}
 				if(canPlace.getSize() ==0)
 					count ++;
-				if(count ==2) finish();
+				if(count ==2)
+				{
+					finish();
+					return;
+				}
 
 
 			}
@@ -433,7 +444,7 @@ public class ChessFrame extends JFrame{
 
 			//System.out.println(black);
 
-			mainPanel.repaint();
+			
 
 		}
 	}

@@ -17,13 +17,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Vector;
 
 import sql.ExecSql;
 
 
 import core.GenMD5;
+import core.Room;
+import core.User;
 
 
+import net.ChatNet;
 import net.IDNet;
 import net.LoginNet;
 import net.RegNet;
@@ -34,6 +39,8 @@ public class ServerMain{
 	{
 		
 		try {
+
+			userList = new Vector<User>();
 			
 			ServerSocket s = new ServerSocket(8090);
 			ExecSql.connected();
@@ -70,7 +77,25 @@ public class ServerMain{
 		
 	}
 	
+	private void sendObject(int room,ChatNet chat) throws IOException
+	{
+		ObjectInputStream in;
+		ObjectOutputStream out;
+		for(User u:userList)
+		{
+			if(u.getRoom()==room)
+			{
+				in = u.getIn();
+				out = u.getOut();
+				out.writeObject(chat);
+				out.flush();
+			}
+		}
+	}
+	
 	private int linkednum = 0;
+	private static Vector<User> userList;
+	private static Vector<Room> roomList;
 	
 	
 	class Server implements Runnable
@@ -96,6 +121,8 @@ public class ServerMain{
 				try{
 					IDNet cmd = (IDNet) in.readObject();
 					int cmdType = cmd.getID();
+					
+					System.out.println(cmdType);
 					
 					switch (cmdType)
 					{
@@ -139,6 +166,9 @@ public class ServerMain{
 									login.setStatus(0);
 									out.writeObject(login);
 									out.flush();
+//									login.getUser().setRoom(1);
+//									userList.add(login.getUser());
+									
 								}else
 								{
 									login.setStatus(1);
@@ -164,6 +194,7 @@ public class ServerMain{
 					case 1:
 					{
 						RegNet reg = (RegNet) cmd;
+						
 						
 						String username = reg.getUsername();
 						char[] pass = reg.getPasswd();
