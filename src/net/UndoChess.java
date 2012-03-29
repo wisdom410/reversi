@@ -8,9 +8,9 @@ Author: lazydomino[AT]163.com(pisces)
 
 package net;
 
-public class UndoChessClass extends IDNet{
+public class UndoChess extends IDNet{
 
-	public UndoChessClass(boolean can)
+	public UndoChess(boolean can)
 	{
 		super(3);
 		this.can = can;

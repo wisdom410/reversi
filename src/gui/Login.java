@@ -15,12 +15,14 @@ import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Properties;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -70,18 +72,37 @@ public class Login extends JFrame{
 	/*
 	 * 连接服务器
 	 */
-	private void connect() 
+	private void connect() throws Exception 
 	{
+		
+		
+		Properties props = new Properties();
+		FileInputStream in = new FileInputStream("config"+File.separator+"serverAddress.props");
+		props.load(in);
+		in.close();
+		
+		String serveraddr = props.getProperty("Server");
 		
 		s = new Socket();
 		try {
-			s.connect(new InetSocketAddress("localhost", 8090),3000);
+			s.connect(new InetSocketAddress(serveraddr, 8090),3000);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
 	}
 	
+	/*
+	 * 登录成功，现实下一窗口（大厅，房间）
+	 */
+	private void login()
+	{
+		dispose();
+		
+		
+		
+		
+	}
 	
 	/*
 	 * 添加登录框（用户名、密码）等；
@@ -122,17 +143,24 @@ public class Login extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 			
-				connect();
 				
 				String user = usernameField.getText().trim();
 				char[] pass = passwdField.getPassword();
-								
+				
+				if(user.length()==0||pass.length==0)
+				{
+					showDialog("用户名或密码不能为空!");
+					return;
+				}
+				
 				LoginNet login = new LoginNet(user, pass);
+			
 				
 				//in= new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
 				//out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
 				
 				try {
+					connect();
 					
 					out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
 					
@@ -147,7 +175,7 @@ public class Login extends JFrame{
 					
 					if(back.getStatus()==0)
 					{
-						showDialog("登录成功");						
+						login();
 					}
 					if(back.getStatus()==1)
 					{
@@ -158,9 +186,9 @@ public class Login extends JFrame{
 					// TODO Auto-generated catch block
 					showDialog("服务器连接失败");
 					//e1.printStackTrace();
-				}catch (ClassNotFoundException e2)
+				}catch (Exception e2)
 				{
-					e2.printStackTrace();
+					showDialog("出现未知错误！");
 				}finally
 				{
 					try {
@@ -174,6 +202,7 @@ public class Login extends JFrame{
 				
 				
 			}
+
 		});
 		
 		reg.addActionListener(new ActionListener() {

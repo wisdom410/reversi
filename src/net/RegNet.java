@@ -10,10 +10,11 @@ package net;
 
 /*
  * 这个类是用来封装注册信息的类，用于注册客户端和服务器之间传输注册信息
+ * status：0->注册成功，1->存在此用户。
  */
-public class RegNetClass extends IDNet{
+public class RegNet extends IDNet{
 
-	public RegNetClass(String username, char[] passwd,int sex, String nickname, String email,int score, int image)
+	public RegNet(String username, char[] passwd,int sex, String nickname, String email,int score, int image)
 	{
 		
 		super(1);

@@ -26,6 +26,7 @@ import core.GenMD5;
 
 import net.IDNet;
 import net.LoginNet;
+import net.RegNet;
 
 public class ServerMain{
 
@@ -149,13 +150,81 @@ public class ServerMain{
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
+						}finally
+						{
+							in.close();
+							out.close();
 						}
 						
 						
 						
+					break;	
+					}
+					
+					case 1:
+					{
+						RegNet reg = (RegNet) cmd;
 						
+						String username = reg.getUsername();
+						char[] pass = reg.getPasswd();
+						int sex = reg.getSex();
+						String nickname = reg.getNickname();
+						String email = reg.getEmail();
+						int score = reg.getScore();
+						int image = reg.getImage();
+						String passwd = GenMD5.getMD5(pass);
+						
+						try {
+							
+							ResultSet result = ExecSql.state.executeQuery("SELECT * FROM users");
+							String nameinsql;
+							String passwdinsql = "";
+							
+							boolean find = false; 
+							while(result.next())
+							{
+								nameinsql = result.getString(1);
+								if(nameinsql.equals(username))
+								{
+									find = true;
+									passwdinsql = result.getString(2);
+									
+								}
+							}
+							
+							if(find)
+							{
+								System.out.println("this user already register!");
+								reg.setStatus(1);
+								out.writeObject(reg);
+								out.flush();
+							}else
+							{
+								String cmdStr = "INSERT INTO users VALUES("+"\'"+username+"\',\'"+passwd+"\',"+sex+",\'"+nickname+"\',\'"+email+"\',"+score+","+image+")";
+								ExecSql.state.execute(cmdStr);
+								System.out.println(username+" register success!");
+								reg.setStatus(0);
+								out.writeObject(reg);
+								out.flush();
+							}
+							
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}finally
+						{
+							in.close();
+							out.close();
+						}
+						
+						
+						
+					break;
 					}
-					}
+					
+					
+					
+					}//end switch
 				} catch (IOException e){
 					e.printStackTrace();
 				}catch (ClassNotFoundException e){

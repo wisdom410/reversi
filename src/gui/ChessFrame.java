@@ -15,10 +15,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.Properties;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import core.ChessMan;
@@ -268,9 +274,51 @@ public class ChessFrame extends JFrame{
 
 	public void finish()
 	{
-		System.out.println("win="+chessManList.isBlackWin());
+		if(chessManList.isBlackWin())
+		{
+			showDialog("黑棋获胜！");
+		}else
+		{
+			showDialog("白棋获胜！");
+		}
+		return;
+	}
+	
+	
+	/*
+	 * 连接服务器
+	 */
+	private void connect() throws Exception 
+	{
+		
+		
+		Properties props = new Properties();
+		FileInputStream in = new FileInputStream("config"+File.separator+"serverAddress.props");
+		props.load(in);
+		in.close();
+		
+		String serveraddr = props.getProperty("Server");
+		
+		s = new Socket();
+		try {
+			s.connect(new InetSocketAddress(serveraddr, 8090),3000);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
 	}
 
+
+	/*
+	 * 对话框
+	 */
+	private void showDialog(String str)
+	{
+		optionPanel = new JOptionPane();
+		optionPanel.showMessageDialog(this, str);
+
+	}
+	
 
 	//var
 	private JPanel  rightPanel;
@@ -283,6 +331,8 @@ public class ChessFrame extends JFrame{
 	private boolean black;
 	private int count = 0;
 	private int now_step = 0;
+	private static Socket s;
+	private static JOptionPane optionPanel;
 
 
 	class MouseAction extends MouseAdapter 
@@ -321,6 +371,10 @@ public class ChessFrame extends JFrame{
 			mainPanel.update(chessManList, canPlace);
 			//System.out.println(pos_x+" "+pos_y);
 
+			
+			
+			
+			
 
 
 			canPlace.clear();

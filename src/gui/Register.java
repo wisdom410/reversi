@@ -15,22 +15,27 @@ import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Properties;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import net.LoginNet;
+import net.RegNet;
 
 /*
  * 这个是注册用户的类
@@ -70,7 +75,60 @@ public class Register extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				
-				connect();
+				try {
+					
+					connect();
+					
+					String username = usernameField.getText().trim();
+					char[] passwd = passwdField.getPassword();
+					String nickname = nicknameField.getText().trim();
+					String email = emailField.getText().trim();
+					
+					if(username.length()>20||nickname.length()>20)
+					{
+						showDialog("用户名或昵称太长！");
+						return;
+					}
+					
+					if(username.length()==0||passwd.length==0||nickname.length()==0||email.length()==0)
+					{
+						showDialog("注册信息不合法！");
+						return;
+					}
+					
+					
+					RegNet reg = new RegNet(username, passwd, sex, nickname, email, 0,sex);
+					
+					out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+					
+					out.writeObject(reg);
+					out.flush();
+					
+					in = new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
+					
+					RegNet back = (RegNet) in.readObject();
+					out.close();
+					in.close();
+					
+					if(back.getStatus()==0)
+					{
+						showDialog("注册成功！");
+						dispose();
+					}
+					if(back.getStatus()==1)
+					{
+						showDialog("该用户已经存在！");
+					}
+					
+					
+				}catch (IOException e2)
+				{
+				showDialog("服务器连接错误！");
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					showDialog("出现未知错误");
+				}
 				
 				
 			}
@@ -113,14 +171,33 @@ public class Register extends JFrame{
 	
 	
 	/*
+	 * 对话框
+	 */
+	private void showDialog(String str)
+	{
+		optionPanel = new JOptionPane();
+		optionPanel.showMessageDialog(this, str);
+
+	}
+	
+	
+	/*
 	 * 连接服务器
 	 */
-	private void connect() 
+	private void connect() throws Exception 
 	{
+		
+		
+		Properties props = new Properties();
+		FileInputStream in = new FileInputStream("config"+File.separator+"serverAddress.props");
+		props.load(in);
+		in.close();
+		
+		String serveraddr = props.getProperty("Server");
 		
 		s = new Socket();
 		try {
-			s.connect(new InetSocketAddress("localhost", 8090),3000);
+			s.connect(new InetSocketAddress(serveraddr, 8090),3000);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
@@ -220,4 +297,8 @@ public class Register extends JFrame{
 	private JTextField nicknameField;
 	private JTextField emailField ;
 	private static Socket s;
+	private static JOptionPane optionPanel;
+	private static ObjectInputStream in;
+	private static ObjectOutputStream out;
+
 }

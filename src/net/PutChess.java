@@ -8,10 +8,10 @@ Author: lazydomino[AT]163.com(pisces)
 
 package net;
 
-public class PutChessClass extends IDNet{
+public class PutChess extends IDNet{
 
 	
-	public PutChessClass(int x,int y)
+	public PutChess(int x,int y)
 	{
 		super(2);
 		
