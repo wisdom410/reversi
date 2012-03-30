@@ -33,6 +33,16 @@ public class HallTableModel extends AbstractTableModel {
 		content.add(v);
 	}
 
+	public void addRoom(Vector<Room>  roomList) {
+		content.clear();
+		
+		for(Room r:roomList)
+		{
+			addRow(r.getRoomName(), r.getScore1(), r.getScore2(), r.getcanView(), r.getnum_pep(), r.getStatus());
+		}
+		
+	}
+	
 	public void removeRow(int row) {
 		content.remove(row);
 	}
@@ -50,15 +60,10 @@ public class HallTableModel extends AbstractTableModel {
 	}
 
 	public Object getValueAt(int r, int c) {
+		//System.out.println(((Vector) content.get(r)).get(c));
 		return ((Vector) content.get(r)).get(c);
 	}
 
-	public void setValueAt(Object value, int row, int col) {
-		((Vector) content.get(row)).remove(col);
-		((Vector) content.get(row)).add(col, value);
-		this.fireTableCellUpdated(row, col);
-	}
-	
 	public void clearRoom()
 	{
 		content.clear();

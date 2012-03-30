@@ -8,33 +8,31 @@ Author: lazydomino[AT]163.com(pisces)
 
 package net;
 
+import core.User;
+
 /*
  * 这个类是用来封装登陆类的，用于客户登录端和服务器传输登录信息
  * status：0->验证成功，1->没有此用户，2->密码不正确。
  */
 public class LoginNet extends IDNet{
 
-	public LoginNet(String username, char[] passwd)
+	public LoginNet(User user)
 	{
 		super(0);
 		
-		this.username = username;
-		if(username.equals("-1"))
-			this.ID = -1;
-		this.passwd = passwd;
+		this.user = user;
 	}
 	
 	
 	
-	public String getUsername() {
-		return username;
+	public User getUser() {
+		return user;
 	}
-	public char[] getPasswd() {
-		return passwd;
+	public void setUser(User user)
+	{
+		this.user = user;
 	}
 
 
-
-	private String username;
-	private char[] passwd;
+	private User user;
 }

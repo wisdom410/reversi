@@ -14,6 +14,8 @@ import gui.Login;
 import java.awt.EventQueue;
 import java.io.IOException;
 
+import core.User;
+
 public class TestHall {
 
 	public static void main(String[] args) {
@@ -22,7 +24,7 @@ public class TestHall {
 			public void run()
 			{
 				
-				new Hall("sdlwwlp");
+				new Hall(new User("sdlwwlp",0,"will","email",0,0));
 			}
 		}) ;
 		

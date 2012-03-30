@@ -39,6 +39,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
+import net.CreateRoomNet;
 import net.IDNet;
 import net.RoomListNet;
 
@@ -55,11 +56,11 @@ import core.HallTableModel;
  */
 public class Hall extends JFrame{
 		
-	public Hall(String username)
+	public Hall(User user) 
 	{
 		super();
 		
-		this.username = username;
+		this.user = user;
 		
 		this.setTitle("网络版黑白棋大厅");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -72,25 +73,7 @@ public class Hall extends JFrame{
 		this.setLayout(new BorderLayout());
 		
 		addelement();
-		
-		
-		try {
-			
-			connect();
-			
-			
-			Runnable r = new IO(s);
-			
-			Thread t = new Thread(r);
-			
-			t.start();
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			showDialog("网络连接错误！");
-			e.printStackTrace();
-		}
-		
+
 		
 	}
 	
@@ -122,6 +105,71 @@ public class Hall extends JFrame{
 		joinRoom = new JButton("<html><font size=6 color =black>加入游戏</font></html>");
 		viewRoom = new JButton("<html><font size=6 color =black>观看游戏</font></html>");
 		exit = new JButton("<html><font size=6 color =black>退出游戏</font></html>");
+		createRoom = new JButton("<html><font size=6 color =black>创建房间</font></html>");
+		refresh = new JButton("<html><font size=6 color =black>刷新列表</font></html>");
+		
+		refresh.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+				refreshFunc();
+				
+			}
+		});
+		
+		createRoom.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					
+					String roomName = javax.swing.JOptionPane.showInputDialog("请输入房间名:");
+					
+					if(roomName.length() == 0)
+					{
+						showDialog("房间名不合法！");
+						return ;
+					}
+					
+					connect();
+					
+					CreateRoomNet requireCreateRoom = new CreateRoomNet(roomName, user);
+					
+					out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+					out.writeObject(requireCreateRoom);
+					out.flush();
+					
+					in = new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
+					
+					IDNet backCmd = (IDNet)in.readObject();
+					
+					if(backCmd.getID()==6)
+					{
+						CreateRoomNet cmd = (CreateRoomNet) backCmd;
+						
+						if(cmd.getStatus() == 1)
+						{
+							showDialog("此房间已经存在！");
+						}
+						if(cmd.getStatus() == 0)
+						{
+							showDialog("创建成功！");
+							refreshFunc();
+						}
+					}
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+					showDialog("网络连接错误！");
+					System.exit(0);
+				}
+			}
+		});
+		
 
 		joinRoom.addActionListener(new ActionListener() {
 			
@@ -152,6 +200,8 @@ public class Hall extends JFrame{
 		});
 		
 		
+		southPanel.add(refresh);
+		southPanel.add(createRoom);
 		southPanel.add(joinRoom);
 		southPanel.add(viewRoom);
 		southPanel.add(exit);
@@ -160,6 +210,42 @@ public class Hall extends JFrame{
 		
 	}
 	
+	/*
+	 * 申请刷新列表
+	 */
+	private void refreshFunc()
+	{
+		try {
+			connect();
+			
+			IDNet requireRoomList = new IDNet(5);
+			
+			out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+			
+			out.writeObject(requireRoomList);
+			out.flush();
+			
+			in = new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
+			
+			IDNet backCmd = (IDNet)in.readObject();
+			
+			if(backCmd.getID()==5)
+			{
+				RoomListNet cmd = (RoomListNet) backCmd;
+				
+				model = new HallTableModel();
+				model.addRoom(cmd.getRoomList());
+				table.setModel(model);
+			}
+			
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			showDialog("网络连接错误！");
+			//e1.printStackTrace();
+			System.exit(0);
+		}
+				
+	}
 	/*
 	 * 向表中添加数据
 	 */
@@ -187,100 +273,45 @@ public class Hall extends JFrame{
 		
 		
 		Properties props = new Properties();
-		FileInputStream in = new FileInputStream("config"+File.separator+"serverAddress.props");
-		props.load(in);
-		in.close();
+		FileInputStream config = new FileInputStream("config"+File.separator+"serverAddress.props");
+		props.load(config);
+		config.close();
 		
 		String serveraddr = props.getProperty("Server");
 		
 		s = new Socket();
-		try {
-			s.connect(new InetSocketAddress(serveraddr, 8090),3000);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		}
+		s.connect(new InetSocketAddress(serveraddr, 8090),3000);
+		
+		
+			
 	}
 	
+	public boolean getRun()
+	{
+		return isRun;
+	}
 	
-	private static ObjectInputStream in;
-	private static ObjectOutputStream out;
-	private static Socket s;
+	public ObjectInputStream getIn()
+	{
+		return in;
+	}
+	
+	public ObjectOutputStream getOut()
+	{
+		return out;
+	}
+	
+	private ObjectInputStream in;
+	private ObjectOutputStream out;
+	private Socket s;
 	private static JOptionPane optionPanel;
-	private static Vector<Room> roomList;
-	private String username;
+	private Vector<Room> roomList;
+	private User user;
 	private JTable table;
 	private Vector<String> columnName;
 	private HallTableModel model;
-	private JButton joinRoom,viewRoom,exit;
-	
-	
-	class IO implements Runnable
-	{
-		
-		public IO (Socket i)
-		{
-			incoming = i;
-			
-			
-			try {
-				
-				
-				
-				out = new ObjectOutputStream(new BufferedOutputStream(incoming.getOutputStream()));
-				
-				
-				IDNet getRoomList = new IDNet(5);
-				
-				
-				
-				out.writeObject(getRoomList);
-				out.flush();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				showDialog("网络连接错误！");
-				e.printStackTrace();
-			}
-		}
-
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			
-			try {
-				
-				in = new ObjectInputStream(new BufferedInputStream(incoming.getInputStream()));
-				
-				IDNet backCmd= (IDNet) in.readObject();
-				
-				int cmdType = backCmd.getID();
-				
-				if(cmdType==5)
-				{
-					roomList = ((RoomListNet) backCmd).getRoomList();
-					
-					System.out.println("roomList get OK!");
-					
-				}
-				
-				
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				showDialog("网络连接错误！");
-				System.exit(0);
-			}catch (ClassNotFoundException e)
-			{
-				e.printStackTrace();
-			}
-			
-		}
-	
-		
-		private Socket incoming;
-
-	}
-	
+	private JButton joinRoom,viewRoom,exit,createRoom,refresh;
+	private boolean isRun = true;
 	
 	
 }

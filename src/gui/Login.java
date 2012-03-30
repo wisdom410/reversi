@@ -93,7 +93,7 @@ public class Login extends JFrame{
 	private void login()
 	{
 		dispose();
-		new Hall(username);
+		new Hall(user);
 		//showDialog("OK");
 	}
 	
@@ -137,7 +137,7 @@ public class Login extends JFrame{
 				// TODO Auto-generated method stub
 			
 				
-				username = usernameField.getText().trim();
+				String username = usernameField.getText().trim();
 				char[] pass = passwdField.getPassword();
 				
 				if(username.length()==0||pass.length==0)
@@ -146,8 +146,9 @@ public class Login extends JFrame{
 					return;
 				}
 				
+				user = new User(username,pass);
 				
-				LoginNet login = new LoginNet(username,pass);
+				LoginNet login = new LoginNet(user);
 			
 				
 				//in= new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
@@ -228,6 +229,6 @@ public class Login extends JFrame{
 	private static ObjectOutputStream out;
 	private static Socket s;
 	private static JOptionPane optionPanel;
-	private String username;
+	private User user;
 	
 }

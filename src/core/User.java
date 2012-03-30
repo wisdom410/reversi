@@ -10,6 +10,7 @@ package core;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 /*
  * 这个类是用来储存用户信息的，
@@ -17,7 +18,7 @@ import java.io.ObjectOutputStream;
  * 所属房间标记，是否是玩家（对应于观赛者），
  * 积分，头像，性别，邮箱，用户名等。。。
  */
-public class User {
+public class User  implements Serializable{
 
 
 	public User(String username, char[] passwd,int sex,String nickname,String email,int score,int image)
@@ -31,6 +32,26 @@ public class User {
 		this.passwd = passwd;
 	}
 	
+	public User(String username,int sex,String nickname,String email,int score,int image)
+	{
+		this.username = username;
+		this.sex = sex;
+		this.nickname = nickname;
+		this.email = email;
+		this.score = score;
+		this.image = image;
+	}
+	
+	public User(String username,char[] passwd)
+	{
+		this.username = username;
+		this.passwd = passwd;
+		this.sex = 2;
+		this.nickname ="";
+		this.email = "";
+		this.score = 0;
+		this.image = 0;
+	}
 	
 	public char[] getPasswd() {
 		return passwd;

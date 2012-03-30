@@ -8,39 +8,48 @@ Author: lazydomino[AT]163.com(pisces)
 
 package core;
 
+import java.io.Serializable;
 import java.util.Vector;
 
-public class Room {
+public class Room  implements Serializable{
 
-	public Room(String roomName,Vector<User> userList)
+	public Room(String roomName)
 	{
 		this.roomName = roomName;
 		
-		this.userList = userList;
+		userList = new Vector<User>();
+		
 		play1 = "";
 		play2 = "";
 		
+		status = "默认";
 		
+		
+	}
+	
+	public void flushRoom()
+	{
 		for(User u:userList)
 		{
 			if(u.isPlayer())
 			{
-				if(play1.length() == 0)
+				if(play1.length()==0)
 				{
 					play1 = u.getUsername();
 					score1 = u.getScore();
 					image1 = u.getImage();
-				}
-				if(play2.length() == 0)
+				}else
 				{
-					play2 = u.getUsername();
-					score2 = u.getScore();
-					image2 = u.getImage();
+					if(play2.length()==0)
+					{
+						play2 = u.getUsername();
+						score2 = u.getScore();
+						image2 = u.getImage();
+					}
 				}
+				
 			}
 		}
-		
-		
 	}
 	
 	public void setcanView(boolean can)
@@ -48,7 +57,7 @@ public class Room {
 		this.canview = can;
 	}
 	
-	public boolean iscanView()
+	public boolean getcanView()
 	{
 		return this.canview;
 	}
@@ -56,6 +65,7 @@ public class Room {
 	public void addUser(User user)
 	{
 		userList.add(user);
+		flushRoom();
 	}
 	
 	public int getnum_pep()
@@ -66,6 +76,30 @@ public class Room {
 	public void delUser(User user)
 	{
 		userList.remove(user);
+	}
+	
+	public String getRoomName()
+	{
+		return roomName;
+	}
+	public Vector<User> getUserList()
+	{
+		return userList;
+	}
+	
+	public int getScore1()
+	{
+		return score1;
+	}
+	
+	public int getScore2()
+	{
+		return score2;
+	}
+	
+	public String getStatus()
+	{
+		return status;
 	}
 	
 	private String roomName;

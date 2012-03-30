@@ -29,6 +29,7 @@ import core.User;
 
 
 import net.ChatNet;
+import net.CreateRoomNet;
 import net.IDNet;
 import net.LoginNet;
 import net.RegNet;
@@ -79,22 +80,6 @@ public class ServerMain{
 		
 	}
 	
-	private void sendObject(int room,ChatNet chat) throws IOException
-	{
-		ObjectInputStream in;
-		ObjectOutputStream out;
-		for(User u:userList)
-		{
-			if(u.getRoom()==room)
-			{
-				in = u.getIn();
-				out = u.getOut();
-				out.writeObject(chat);
-				out.flush();
-			}
-		}
-	}
-	
 	private int linkednum = 0;
 	private static Vector<User> userList;
 	private static Vector<Room> roomList;
@@ -124,15 +109,14 @@ public class ServerMain{
 					IDNet cmd = (IDNet) in.readObject();
 					int cmdType = cmd.getID();
 					
-					System.out.println(cmdType);
 					
 					switch (cmdType)
 					{
 					case 0://登录
 					{
 						LoginNet login = (LoginNet) cmd;
-						String user = login.getUsername();
-						char[] pass = login.getPasswd();
+						String user = login.getUser().getUsername();
+						char[] pass = login.getUser().getPasswd();
 						
 						String passwd = GenMD5.getMD5(pass);
 						
@@ -140,8 +124,13 @@ public class ServerMain{
 							
 							ResultSet result = ExecSql.state.executeQuery("SELECT * FROM users");
 							//ResultSet result = ExecSql.state.executeQuery("SELECT * FROM Greetings");
-							String nameinsql;
+							String nameinsql = "";
 							String passwdinsql = "";
+							int sex = 0;
+							int score = 0;
+							int image = 0;
+							String email = null;
+							String nickname = null;
 							
 							boolean find = false; 
 							while(result.next())
@@ -151,7 +140,11 @@ public class ServerMain{
 								{
 									find = true;
 									passwdinsql = result.getString(2);
-									
+									sex = Integer.parseInt(result.getString(3));
+									score = Integer.parseInt(result.getString(6));
+									image = Integer.parseInt(result.getString(7));
+									email = result.getString(5);
+									nickname = result.getString(4);
 								}
 							}
 							
@@ -165,6 +158,8 @@ public class ServerMain{
 							{
 								if(passwdinsql.equals(passwd))
 								{
+									User u = new User(user,sex,nickname,email,score,image);
+									login.setUser(u);
 									login.setStatus(0);
 									out.writeObject(login);
 									out.flush();
@@ -246,12 +241,51 @@ public class ServerMain{
 					
 					case 5://房间列表
 					{
-						out.writeObject(new RoomListNet(roomList));
+//						roomList.add(new Room("server1"));
+//						User sdlwwlp = new User("sdlwwlp",1,"will","sdlwwlp@163.com",1,1);
+//						for(Room r:roomList)
+//						{
+//							if(r.getRoomName().equals("server1"))
+//							{
+//								r.addUser(sdlwwlp);
+//								r.flushRoom();
+//							}
+//						}
+						
+						RoomListNet net = new RoomListNet(roomList);
+						out.writeObject(net);
 						out.flush();
+						
 						
 					break;
 					}
-					
+					case 6://创建房间
+					{
+						CreateRoomNet cre = (CreateRoomNet) cmd;
+						
+						for(Room r:roomList)
+						{
+							if(r.getRoomName().equals(cre.getRoomName()))
+							{
+								cre.setStatus(1);
+								out.writeObject(cre);
+								out.flush();
+								return;
+							}
+						}
+						
+						Room room = new Room(cre.getRoomName());
+						cre.getUser().setPlayer(true);
+						cre.setStatus(0);
+						room.addUser(cre.getUser());
+						
+						out.writeObject(cre);
+						out.flush();
+						
+						roomList.add(room);
+						
+					break;
+					}
 					
 					
 					}//end switch
@@ -260,12 +294,6 @@ public class ServerMain{
 				}catch (ClassNotFoundException e){
 					e.printStackTrace();
 				}
-				finally
-				{
-					incoming.close();
-					
-				}
-				
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -278,6 +306,27 @@ public class ServerMain{
 	}
 	
 	
+	class IORecord
+	{
+		
+		public IORecord(ObjectInputStream in,ObjectOutputStream out)
+		{
+			this.in = in;
+			this.out = out;
+		}
+		
+		public ObjectInputStream getIn()
+		{
+			return in;
+		}
+		
+		public ObjectOutputStream getOut()
+		{
+			return out;
+		}
+		private ObjectInputStream in;
+		private ObjectOutputStream out;
+	}
 	
 		
 }
