@@ -32,6 +32,7 @@ import net.ChatNet;
 import net.IDNet;
 import net.LoginNet;
 import net.RegNet;
+import net.RoomListNet;
 
 public class ServerMain{
 
@@ -41,6 +42,7 @@ public class ServerMain{
 		try {
 
 			userList = new Vector<User>();
+			roomList = new Vector<Room>();
 			
 			ServerSocket s = new ServerSocket(8090);
 			ExecSql.connected();
@@ -180,18 +182,12 @@ public class ServerMain{
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}finally
-						{
-							in.close();
-							out.close();
 						}
-						
-						
 						
 					break;	
 					}
 					
-					case 1:
+					case 1://注册
 					{
 						RegNet reg = (RegNet) cmd;
 						
@@ -242,13 +238,16 @@ public class ServerMain{
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}finally
-						{
-							in.close();
-							out.close();
-						}
+						}				
 						
 						
+					break;
+					}
+					
+					case 5://房间列表
+					{
+						out.writeObject(new RoomListNet(roomList));
+						out.flush();
 						
 					break;
 					}

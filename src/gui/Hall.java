@@ -13,6 +13,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.ScrollPane;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,20 +28,23 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
+import net.IDNet;
 import net.RoomListNet;
 
 import core.User;
 import core.Room;
-
+import core.HallTableModel;
 /*
  * 这个类 是大厅类，
  * 包含：
@@ -69,6 +74,24 @@ public class Hall extends JFrame{
 		addelement();
 		
 		
+		try {
+			
+			connect();
+			
+			
+			Runnable r = new IO(s);
+			
+			Thread t = new Thread(r);
+			
+			t.start();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			showDialog("网络连接错误！");
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	
@@ -80,15 +103,71 @@ public class Hall extends JFrame{
 		JLabel title = new JLabel("<html><font size=10 color =blue>房间列表</font></html>",SwingConstants.CENTER);
 		cenPanel.add(title,BorderLayout.NORTH);
 		
-		table = new JTable(cells, columnName);
-		table.setEnabled(false);
+		columnName = new Vector<String>();
 		
+		model = new HallTableModel();
 		
+		table = new JTable(model);
+		
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		addData("test1",0,0,true,1,"等待玩家");
+		addData("test2",9,10,true,2,"游戏中");
 		cenPanel.add(new JScrollPane(table));
 		
 		this.add(cenPanel);
+		
+		
+		JPanel southPanel = new JPanel();
+		
+		joinRoom = new JButton("<html><font size=6 color =black>加入游戏</font></html>");
+		viewRoom = new JButton("<html><font size=6 color =black>观看游戏</font></html>");
+		exit = new JButton("<html><font size=6 color =black>退出游戏</font></html>");
+
+		joinRoom.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		viewRoom.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		exit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+				System.exit(0);
+			}
+		});
+		
+		
+		southPanel.add(joinRoom);
+		southPanel.add(viewRoom);
+		southPanel.add(exit);
+		
+		this.add(southPanel,BorderLayout.SOUTH);
+		
 	}
 	
+	/*
+	 * 向表中添加数据
+	 */
+	 private void addData(String roomName,int score1,int score2,boolean canview,int num_pep,String status) {
+	        model.addRow(roomName,score1,score2,canview,num_pep,status);
+	        table.updateUI();
+	    }
+	 
 	
 	/*
 	 * 对话框
@@ -128,24 +207,13 @@ public class Hall extends JFrame{
 	private static ObjectOutputStream out;
 	private static Socket s;
 	private static JOptionPane optionPanel;
-	private Vector<Room> roomList;
+	private static Vector<Room> roomList;
 	private String username;
 	private JTable table;
-	private String[] columnName ={"房间名称","玩家1积分","玩家2积分","能否观战","人数","状态"};
-	private Object[][] cells = {
-			{"","","","","",""},
-			{"","","","","",""},
-			{"","","","","",""},
-			{"","","","","",""},
-			{"","","","","",""},
-			{"","","","","",""},
-			{"","","","","",""},
-			{"","","","","",""},
-			{"","","","","",""},
-			{"","","","","",""},
-			{"","","","","",""}
-			
-	};
+	private Vector<String> columnName;
+	private HallTableModel model;
+	private JButton joinRoom,viewRoom,exit;
+	
 	
 	class IO implements Runnable
 	{
@@ -154,16 +222,24 @@ public class Hall extends JFrame{
 		{
 			incoming = i;
 			
-			roomList = new RoomListNet();
-			
-			roomList.setStatus(0);
 			
 			try {
-				out.writeObject(roomList);
+				
+				
+				
+				out = new ObjectOutputStream(new BufferedOutputStream(incoming.getOutputStream()));
+				
+				
+				IDNet getRoomList = new IDNet(5);
+				
+				
+				
+				out.writeObject(getRoomList);
 				out.flush();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				showDialog("网络连接错误！");
+				e.printStackTrace();
 			}
 		}
 
@@ -173,7 +249,19 @@ public class Hall extends JFrame{
 			
 			try {
 				
-				roomList = (RoomListNet) in.readObject();
+				in = new ObjectInputStream(new BufferedInputStream(incoming.getInputStream()));
+				
+				IDNet backCmd= (IDNet) in.readObject();
+				
+				int cmdType = backCmd.getID();
+				
+				if(cmdType==5)
+				{
+					roomList = ((RoomListNet) backCmd).getRoomList();
+					
+					System.out.println("roomList get OK!");
+					
+				}
 				
 				
 				
@@ -190,7 +278,9 @@ public class Hall extends JFrame{
 	
 		
 		private Socket incoming;
-		private RoomListNet roomList;
+
 	}
+	
+	
 	
 }

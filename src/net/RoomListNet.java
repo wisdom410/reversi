@@ -18,10 +18,15 @@ import core.Room;
  */
 public class RoomListNet extends IDNet{
 
-	public RoomListNet()
+	public RoomListNet(Vector<Room> roomList)
 	{
 		super(5);
-				
+		this.roomList = roomList;
+	}
+	
+	public Vector<Room> getRoomList()
+	{
+		return roomList;
 	}
 	
 	private Vector<Room> roomList;
