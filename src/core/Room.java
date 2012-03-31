@@ -22,13 +22,20 @@ public class Room  implements Serializable{
 		play1 = "";
 		play2 = "";
 		
-		status = "默认";
+		status = "等待玩家";
 		
 		
 	}
 	
-	public void flushRoom()
+	private void flushRoom()
 	{
+		play1 = "";
+		play2 = "";
+		score1 = 0;
+		score2 = 0;
+		image1 = 0;
+		image2 = 0;
+		
 		for(User u:userList)
 		{
 			if(u.isPlayer())
@@ -76,6 +83,7 @@ public class Room  implements Serializable{
 	public void delUser(User user)
 	{
 		userList.remove(user);
+		flushRoom();
 	}
 	
 	public String getRoomName()
@@ -100,6 +108,30 @@ public class Room  implements Serializable{
 	public String getStatus()
 	{
 		return status;
+	}
+	
+	public String getPlayer1()
+	{
+		return play1;
+	}
+	
+	public String getPlayer2()
+	{
+		return play2;
+	}
+	
+	public void setPlayer1(User user)
+	{
+		this.play1 = user.getUsername();
+		this.score1 = user.getScore();
+		this.image1 = user.getImage();
+	}
+	
+	public void setPlayer2(User user)
+	{
+		this.play2 = user.getUsername();
+		this.score2 = user.getScore();
+		this.image2 = user.getImage();
 	}
 	
 	private String roomName;

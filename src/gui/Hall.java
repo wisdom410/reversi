@@ -93,8 +93,8 @@ public class Hall extends JFrame{
 		table = new JTable(model);
 		
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		addData("test1",0,0,true,1,"等待玩家");
-		addData("test2",9,10,true,2,"游戏中");
+		//addData("test1",0,0,true,1,"等待玩家");
+		//addData("test2",9,10,true,2,"游戏中");
 		cenPanel.add(new JScrollPane(table));
 		
 		this.add(cenPanel);
@@ -249,8 +249,8 @@ public class Hall extends JFrame{
 	/*
 	 * 向表中添加数据
 	 */
-	 private void addData(String roomName,int score1,int score2,boolean canview,int num_pep,String status) {
-	        model.addRow(roomName,score1,score2,canview,num_pep,status);
+	 private void addData(String roomName,String player1,int score1,String player2,int score2,boolean canview,int num_pep,String status) {
+	        model.addRow(roomName,player1,score1,player2,score2,canview,num_pep,status);
 	        table.updateUI();
 	    }
 	 

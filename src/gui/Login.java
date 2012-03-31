@@ -93,6 +93,7 @@ public class Login extends JFrame{
 	private void login()
 	{
 		dispose();
+		System.out.println(user.getScore());
 		new Hall(user);
 		//showDialog("OK");
 	}
@@ -170,6 +171,7 @@ public class Login extends JFrame{
 					
 					if(back.getStatus()==0)
 					{
+						user = back.getUser();
 						login();
 					}
 					if(back.getStatus()==1)

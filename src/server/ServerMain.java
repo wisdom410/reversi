@@ -276,8 +276,10 @@ public class ServerMain{
 						
 						Room room = new Room(cre.getRoomName());
 						cre.getUser().setPlayer(true);
+						
 						cre.setStatus(0);
 						room.addUser(cre.getUser());
+						room.setPlayer1(cre.getUser());
 						
 						out.writeObject(cre);
 						out.flush();

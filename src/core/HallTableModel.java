@@ -20,16 +20,18 @@ public class HallTableModel extends AbstractTableModel {
 		content = new Vector();
 	}
 
-	public void addRow(String roomName, int score1, int score2,
+	public void addRow(String roomName, String player1,int score1,String player2, int score2,
 			boolean canview, int num_pep, String status) {
-		Vector v = new Vector(6);
+		Vector v = new Vector(8);
 		//v.add(0, new Integer(content.size()));
 		v.add(0, roomName);
-		v.add(1, score1);
-		v.add(2, score2);
-		v.add(3, canview);
-		v.add(4, num_pep);
-		v.add(5, status);
+		v.add(1,player1);
+		v.add(2, score1);
+		v.add(3, player2);
+		v.add(4, score2);
+		v.add(5, canview);
+		v.add(6, num_pep);
+		v.add(7, status);
 		content.add(v);
 	}
 
@@ -38,7 +40,7 @@ public class HallTableModel extends AbstractTableModel {
 		
 		for(Room r:roomList)
 		{
-			addRow(r.getRoomName(), r.getScore1(), r.getScore2(), r.getcanView(), r.getnum_pep(), r.getStatus());
+			addRow(r.getRoomName(), r.getPlayer1(),r.getScore1(),r.getPlayer2(), r.getScore2(), r.getcanView(), r.getnum_pep(), r.getStatus());
 		}
 		
 	}
@@ -69,6 +71,6 @@ public class HallTableModel extends AbstractTableModel {
 		content.clear();
 	}
 
-	private String[] title = { "房间名称", "玩家1积分", "玩家2积分", "能否观战", "房间人数", "房间状态" };
+	private String[] title = { "房间名称", "玩家1", "玩家1积分", "玩家2", "玩家2积分", "能否观战", "房间人数", "房间状态" };
 	private Vector content;
 }
