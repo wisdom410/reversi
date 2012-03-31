@@ -73,6 +73,9 @@ public class Hall extends JFrame{
 		this.setLayout(new BorderLayout());
 		
 		addelement();
+		
+		Thread t = new refreshTable();
+		t.start();
 
 		
 	}
@@ -200,7 +203,7 @@ public class Hall extends JFrame{
 		});
 		
 		
-		southPanel.add(refresh);
+		//southPanel.add(refresh);
 		southPanel.add(createRoom);
 		southPanel.add(joinRoom);
 		southPanel.add(viewRoom);
@@ -233,9 +236,11 @@ public class Hall extends JFrame{
 			{
 				RoomListNet cmd = (RoomListNet) backCmd;
 				
-				model = new HallTableModel();
+				model.clearRoom();
+				//model = new HallTableModel();
 				model.addRoom(cmd.getRoomList());
-				table.setModel(model);
+				//table.setModel(model);
+				table.updateUI();
 			}
 			
 		} catch (Exception e1) {
@@ -313,5 +318,22 @@ public class Hall extends JFrame{
 	private JButton joinRoom,viewRoom,exit,createRoom,refresh;
 	private boolean isRun = true;
 	
+	
+	class refreshTable extends Thread
+	{
+		public void run()
+		{
+			while(true)
+			{
+				refreshFunc();
+				try {
+					sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
+			}
+		}
+	}
 	
 }

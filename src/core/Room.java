@@ -23,6 +23,7 @@ public class Room  implements Serializable{
 		play2 = "";
 		
 		status = "等待玩家";
+		canview = true;
 		
 		
 	}
