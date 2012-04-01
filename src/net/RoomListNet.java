@@ -11,6 +11,7 @@ package net;
 import java.util.Vector;
 
 import core.Room;
+import core.User;
 
 /*
  * 这个类是房间类
@@ -24,11 +25,23 @@ public class RoomListNet extends IDNet{
 		this.roomList = roomList;
 	}
 	
+	public RoomListNet(User u)
+	{
+		super(5);
+		this.user = u;
+	}
+	
 	public Vector<Room> getRoomList()
 	{
 		return roomList;
 	}
 	
+	public User getUser()
+	{
+		return user;
+	}
+	
 	private Vector<Room> roomList;
+	private User user;
 	
 }

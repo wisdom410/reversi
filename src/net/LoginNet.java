@@ -12,7 +12,7 @@ import core.User;
 
 /*
  * 这个类是用来封装登陆类的，用于客户登录端和服务器传输登录信息
- * status：0->验证成功，1->没有此用户，2->密码不正确。
+ * status：0->验证成功，1->没有此用户，2->密码不正确,3->此用户已经登录.
  */
 public class LoginNet extends IDNet{
 

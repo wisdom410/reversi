@@ -135,6 +135,16 @@ public class Room  implements Serializable{
 		this.image2 = user.getImage();
 	}
 	
+	public void setChessBoard(ChessManList c)
+	{
+		this.chessBoard = c;
+	}
+	
+	public ChessManList getChessBoard()
+	{
+		return this.chessBoard;
+	}
+	
 	private String roomName;
 	private String play1,play2;
 	private String status;
@@ -142,4 +152,5 @@ public class Room  implements Serializable{
 	private int image1,image2;
 	private boolean canview;
 	private Vector<User> userList;
+	private ChessManList chessBoard;
 }

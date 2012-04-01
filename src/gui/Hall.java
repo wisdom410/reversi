@@ -37,6 +37,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import net.CreateRoomNet;
@@ -98,6 +100,26 @@ public class Hall extends JFrame{
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		//addData("test1",0,0,true,1,"等待玩家");
 		//addData("test2",9,10,true,2,"游戏中");
+		
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				// TODO Auto-generated method stub
+				System.out.println(table.getSelectedRow());
+				Room selectRoom = roomList.get(table.getSelectedRow());
+				if(selectRoom.getPlayer1().length()==0||selectRoom.getPlayer2().length()==0)
+				{
+					joinRoom.setEnabled(true);
+					viewRoom.setEnabled(false);
+				}else
+				{
+					joinRoom.setEnabled(false);
+					viewRoom.setEnabled(true);
+				}
+			}
+		});
+		
 		cenPanel.add(new JScrollPane(table));
 		
 		this.add(cenPanel);
@@ -111,6 +133,8 @@ public class Hall extends JFrame{
 		createRoom = new JButton("<html><font size=6 color =black>创建房间</font></html>");
 		refresh = new JButton("<html><font size=6 color =black>刷新列表</font></html>");
 		
+		joinRoom.setEnabled(false);
+		viewRoom.setEnabled(false);
 		refresh.addActionListener(new ActionListener() {
 			
 			@Override
@@ -131,7 +155,7 @@ public class Hall extends JFrame{
 					
 					String roomName = javax.swing.JOptionPane.showInputDialog("请输入房间名:");
 					
-					if(roomName.length() == 0)
+					if(roomName.length() == 0||roomName.equals("null"))
 					{
 						showDialog("房间名不合法！");
 						return ;
@@ -221,7 +245,7 @@ public class Hall extends JFrame{
 		try {
 			connect();
 			
-			IDNet requireRoomList = new IDNet(5);
+			RoomListNet requireRoomList = new RoomListNet(user);
 			
 			out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
 			
@@ -236,11 +260,18 @@ public class Hall extends JFrame{
 			{
 				RoomListNet cmd = (RoomListNet) backCmd;
 				
-				model.clearRoom();
-				//model = new HallTableModel();
-				model.addRoom(cmd.getRoomList());
-				//table.setModel(model);
-				table.updateUI();
+				roomList = cmd.getRoomList();
+				try
+				{
+					model.clearRoom();
+					//model = new HallTableModel();
+					model.addRoom(roomList);
+					//table.setModel(model);
+					table.updateUI();
+				}catch (Exception e)
+				{
+					
+				}
 			}
 			
 		} catch (Exception e1) {

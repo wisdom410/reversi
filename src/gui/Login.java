@@ -169,6 +169,11 @@ public class Login extends JFrame{
 					out.close();
 					in.close();
 					
+					if(back.getStatus()==3)
+					{
+						showDialog("此用户已经登录！");
+					}
+					
 					if(back.getStatus()==0)
 					{
 						user = back.getUser();

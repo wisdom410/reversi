@@ -17,7 +17,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Vector;
 
 import sql.ExecSql;
@@ -47,6 +46,9 @@ public class ServerMain{
 			
 			ServerSocket s = new ServerSocket(8090);
 			ExecSql.connected();
+			
+			Thread clearUser = new ClearUsers();
+			clearUser.start();
 			
 			
 			while(true)
@@ -101,8 +103,8 @@ public class ServerMain{
 				
 				
 				
-				ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(incoming.getInputStream()));
-				ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(incoming.getOutputStream()));
+				in = new ObjectInputStream(new BufferedInputStream(incoming.getInputStream()));
+				out = new ObjectOutputStream(new BufferedOutputStream(incoming.getOutputStream()));
 				
 			
 				try{
@@ -121,6 +123,25 @@ public class ServerMain{
 						String passwd = GenMD5.getMD5(pass);
 						
 						try {
+							
+							boolean isLogin = false;
+							
+							for(User u:userList)
+							{
+								if(u.getUsername().equals(user))
+								{
+									isLogin = true;
+									break;
+								}
+							}
+							
+							if(isLogin)
+							{
+								login.setStatus(3);
+								out.writeObject(login);
+								out.flush();
+								return;								
+							}
 							
 							ResultSet result = ExecSql.state.executeQuery("SELECT * FROM users");
 							//ResultSet result = ExecSql.state.executeQuery("SELECT * FROM Greetings");
@@ -251,6 +272,22 @@ public class ServerMain{
 //								r.flushRoom();
 //							}
 //						}
+						RoomListNet roo = (RoomListNet) cmd;
+						
+						boolean inUserList = false;
+						for(User u:userList)
+						{
+							if(u.getUsername().equals(roo.getUser().getUsername()))
+							{
+								inUserList = true;
+								break;
+							}
+						}
+						
+						if(!inUserList)
+						{
+							userList.add(roo.getUser());
+						}
 						
 						RoomListNet net = new RoomListNet(roomList);
 						out.writeObject(net);
@@ -300,34 +337,46 @@ public class ServerMain{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}finally
+			{
+				try {
+					out.close();
+					in.close();
+					incoming.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
 		}
 	
 		private Socket incoming;
-	}
-	
-	
-	class IORecord
-	{
-		
-		public IORecord(ObjectInputStream in,ObjectOutputStream out)
-		{
-			this.in = in;
-			this.out = out;
-		}
-		
-		public ObjectInputStream getIn()
-		{
-			return in;
-		}
-		
-		public ObjectOutputStream getOut()
-		{
-			return out;
-		}
 		private ObjectInputStream in;
 		private ObjectOutputStream out;
+		
+	}
+	
+	/*
+	 * 定时清除登录的用户列表，用于"心跳检测"
+	 */
+	class ClearUsers extends Thread 
+	
+	{
+		public void run()
+		{
+			while(true)
+			{
+				userList.clear();
+				try {
+					sleep(30000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
 	}
 	
 		

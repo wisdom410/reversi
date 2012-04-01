@@ -83,12 +83,19 @@ public class Register extends JFrame{
 					
 					String username = usernameField.getText().trim();
 					char[] passwd = passwdField.getPassword();
+					char[] passwd2 = passwdField2.getPassword();
 					String nickname = nicknameField.getText().trim();
 					String email = emailField.getText().trim();
 					
 					if(username.length()>20||nickname.length()>20)
 					{
 						showDialog("用户名或昵称太长！");
+						return;
+					}
+					
+					if(!passwd.equals(passwd2))
+					{
+						showDialog("两次密码不一致！");
 						return;
 					}
 					
@@ -212,12 +219,14 @@ public class Register extends JFrame{
 		
 		JLabel usernameLabel = new JLabel("用户名: ");
 		JLabel passwdLabel = new   JLabel("密码:    ");
+		JLabel passwdLabel2 = new   JLabel("密码:    ");
 		JLabel sexLabel = new      JLabel("性别:    ");
 		JLabel nicknameLabel = new JLabel("昵称:    ");
 		JLabel emailLabel = new    JLabel("邮箱:    ");
 		
 		usernameField = new JTextField();
 		passwdField = new JPasswordField();
+		passwdField2 = new JPasswordField();
 		
 		JPanel usernamePanel = new JPanel();
 		usernamePanel.setLayout(new BorderLayout());
@@ -231,6 +240,11 @@ public class Register extends JFrame{
 		passwdPanel.add(passwdField);
 		passwdPanel.setBounds(50, 90, 200, 25);
 		
+		JPanel passwdPanel2 = new JPanel();
+		passwdPanel2.setLayout(new BorderLayout());
+		passwdPanel2.add(passwdLabel2,BorderLayout.WEST);
+		passwdPanel2.add(passwdField2);
+		passwdPanel2.setBounds(50, 130, 200, 25);
 		
 		JPanel sexPanel = new JPanel();
 		sexPanel.setLayout(new BorderLayout());
@@ -260,24 +274,25 @@ public class Register extends JFrame{
 		});
 		
 		sexPanel.add(sexBox);
-		sexPanel.setBounds(50, 170, 200 ,25);
+		sexPanel.setBounds(50, 210, 200 ,25);
 		
 		JPanel nicknamePanel = new JPanel();
 		nicknamePanel.setLayout(new BorderLayout());
 		nicknamePanel.add(nicknameLabel,BorderLayout.WEST);
 		nicknameField = new JTextField();
 		nicknamePanel.add(nicknameField);
-		nicknamePanel.setBounds(50, 130, 200, 25);
+		nicknamePanel.setBounds(50, 170, 200, 25);
 		
 		JPanel emailPanel = new JPanel();
 		emailPanel.setLayout(new BorderLayout());
 		emailPanel.add(emailLabel,BorderLayout.WEST);
 		emailField = new JTextField();
 		emailPanel.add(emailField);
-		emailPanel.setBounds(50, 210, 200, 25);
+		emailPanel.setBounds(50, 250, 200, 25);
 		
 		mainPanel.add(usernamePanel);
 		mainPanel.add(passwdPanel);
+		mainPanel.add(passwdPanel2);
 		mainPanel.add(nicknamePanel);
 		mainPanel.add(sexPanel);
 		mainPanel.add(emailPanel);
@@ -294,7 +309,7 @@ public class Register extends JFrame{
 	private String nickname = "";
 	private String email = "";
 	private JTextField usernameField;
-	private JPasswordField passwdField;
+	private JPasswordField passwdField,passwdField2;
 	private JComboBox<String> sexBox;
 	private JTextField nicknameField;
 	private JTextField emailField ;
