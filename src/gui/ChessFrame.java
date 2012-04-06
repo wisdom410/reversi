@@ -2,11 +2,12 @@
 ID: lazydom1
 LANG: JAVA
 TASK: ChessFrame.java
-Created on: 2012-2-18-下午7:57:13
-Author: lazydomino@163.com(pisces)
+Created on: 2012-4-1-上午9:22:43
+Author: lazydomino[AT]163.com(pisces)
 */
 
 package gui;
+
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -14,9 +15,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Properties;
@@ -27,18 +33,21 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import net.ExitRoomNet;
+
 import core.ChessMan;
 import core.ChessManList;
-
+import core.Room;
+import core.User;
 
 public class ChessFrame extends JFrame{
-
-	public ChessFrame()
+	
+	public ChessFrame(Room room,User u)
 	{
 		super();
 
-		this.setTitle("黑白棋");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setTitle("黑白棋--"+room.getRoomName());
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		ImageIcon ico = new ImageIcon("res"+File.separator+"ico.png");
 		this.setIconImage(ico.getImage());
 		this.setLayout(new BorderLayout());
@@ -46,10 +55,43 @@ public class ChessFrame extends JFrame{
 		this.setMinimumSize(new Dimension(1024, 730));
 		this.setMaximumSize(new Dimension(1024, 730));
 		this.setResizable(false);
-
+		
+		this.room = room;
+		this.user = u;
+		
+		
+		this.addWindowListener(new WindowAdapter() {
+			
+			public void windowClosed(WindowEvent e){
+				
+				ExitRoomNet exit = new ExitRoomNet(user);
+				
+				try {
+					connect();
+					
+					ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+					
+					out.writeObject(exit);
+					out.flush();
+					
+					out.close();
+					
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				
+			}
+		});
+		
+		
+		
 		addPanel();
 
 	}
+	
 	/*
 	 * add the mainPanel and the rightPanel include the chatPanel and the players' information panel.
 	 */
@@ -57,12 +99,9 @@ public class ChessFrame extends JFrame{
 	{
 
 
-		chessManList = new ChessManList();
-		chessManList.add(4, 4, false);
-		chessManList.add(4, 5, true);
-		chessManList.add(5, 4, true);
-		chessManList.add(5, 5, false);
-		black = true;
+		chessManList = room.getChessManList();
+		
+		black = room.getBlack();
 
 		canPlace = new ChessManList();
 		canPlace.add(3, 4, true);
@@ -315,8 +354,7 @@ public class ChessFrame extends JFrame{
 	 */
 	private void showDialog(String str)
 	{
-		optionPanel = new JOptionPane();
-		optionPanel.showMessageDialog(this, str);
+		JOptionPane.showMessageDialog(this, str);
 
 	}
 	
@@ -333,7 +371,8 @@ public class ChessFrame extends JFrame{
 	private int count = 0;
 	private int now_step = 0;
 	private static Socket s;
-	private static JOptionPane optionPanel;
+	private Room room;
+	private User user;
 
 
 	class MouseAction extends MouseAdapter 
@@ -449,3 +488,5 @@ public class ChessFrame extends JFrame{
 		}
 	}
 }
+
+

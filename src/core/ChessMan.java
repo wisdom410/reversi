@@ -8,10 +8,12 @@ Author: lazydomino@163.com(pisces)
 
 package core;
 
+import java.io.Serializable;
+
 /*
  * 描述棋子的类，因为棋盘是 8*8 的，所以为了方便直接用 i，j坐标，坐标都是从[1,1]开始[8,8]结束。
  */
-public class ChessMan implements Cloneable
+public class ChessMan implements Cloneable,Serializable
 {	
 	public ChessMan(int x,int y, boolean black)
 	{

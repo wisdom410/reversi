@@ -8,12 +8,13 @@ Author: lazydomino@163.com(pisces)
 
 package core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /*
  * 描述整个棋盘的类。每个棋子都存在一个ArrayList里面，遍历ArrayList就可以找到各个棋子位置。
  */
-public class ChessManList  implements Cloneable{
+public class ChessManList  implements Cloneable,Serializable{
 
 
 	public ChessManList()

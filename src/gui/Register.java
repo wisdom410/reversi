@@ -93,16 +93,28 @@ public class Register extends JFrame{
 						return;
 					}
 					
-					if(!passwd.equals(passwd2))
-					{
-						showDialog("两次密码不一致！");
-						return;
-					}
 					
 					if(username.length()==0||passwd.length==0||nickname.length()==0||email.length()==0)
 					{
 						showDialog("注册信息不合法！");
 						return;
+					}
+					
+					if(passwd.length!=passwd2.length)
+					{
+
+						showDialog("两次密码不一致！");
+						return;
+					}
+					for(int i = 0;i<passwd.length;i++)
+					{
+						//System.out.println(passwd+" "+passwd2 );
+												
+						if(passwd[i]!=passwd2[i])
+						{
+							showDialog("两次密码不一致！");
+							return;
+						}
 					}
 					
 					
@@ -137,6 +149,7 @@ public class Register extends JFrame{
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					showDialog("出现未知错误");
+					e1.printStackTrace();
 				}
 				
 				

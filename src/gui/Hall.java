@@ -183,8 +183,11 @@ public class Hall extends JFrame{
 						}
 						if(cmd.getStatus() == 0)
 						{
-							showDialog("创建成功！");
+							//showDialog("创建成功！");
 							refreshFunc();
+//需要修改
+							new ChessFrame(roomList.get(roomList.size()-1),user);
+							
 						}
 					}
 					
@@ -296,8 +299,7 @@ public class Hall extends JFrame{
 	 */
 	private void showDialog(String str)
 	{
-		optionPanel = new JOptionPane();
-		optionPanel.showMessageDialog(this, str);
+		JOptionPane.showMessageDialog(this, str);
 
 	}
 	
@@ -340,7 +342,6 @@ public class Hall extends JFrame{
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private Socket s;
-	private static JOptionPane optionPanel;
 	private Vector<Room> roomList;
 	private User user;
 	private JTable table;

@@ -25,8 +25,17 @@ public class Room  implements Serializable{
 		status = "等待玩家";
 		canview = true;
 		
+		chessManList = new ChessManList();
+		
+		chessManList.add(4, 4, false);
+		chessManList.add(4, 5, true);
+		chessManList.add(5, 4, true);
+		chessManList.add(5, 5, false);
+		black = true;
+
 		
 	}
+	
 	
 	private void flushRoom()
 	{
@@ -135,14 +144,24 @@ public class Room  implements Serializable{
 		this.image2 = user.getImage();
 	}
 	
-	public void setChessBoard(ChessManList c)
+	public void setChessManList (ChessManList c)
 	{
-		this.chessBoard = c;
+		this.chessManList = c;
 	}
 	
-	public ChessManList getChessBoard()
+	public ChessManList getChessManList()
 	{
-		return this.chessBoard;
+		return this.chessManList;
+	}
+	
+	public void setBlack(boolean b)
+	{
+		this.black = b;
+	}
+	
+	public boolean getBlack()
+	{
+		return this.black;
 	}
 	
 	private String roomName;
@@ -152,5 +171,6 @@ public class Room  implements Serializable{
 	private int image1,image2;
 	private boolean canview;
 	private Vector<User> userList;
-	private ChessManList chessBoard;
+	private ChessManList chessManList;
+	private boolean black;
 }

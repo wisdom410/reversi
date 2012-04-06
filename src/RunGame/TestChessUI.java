@@ -8,7 +8,7 @@ Author: lazydomino@163.com(pisces)
 
 package RunGame;
 
-import gui.ChessFrame;
+import gui.ChessFrame_old;
 
 import java.awt.EventQueue;
 
@@ -21,7 +21,7 @@ public class TestChessUI {
 			{
 				
 				//System.out.println("\u7880");
-				new ChessFrame();
+				new ChessFrame_old();
 			}
 		}) ;
 		

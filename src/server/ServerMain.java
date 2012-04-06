@@ -29,6 +29,7 @@ import core.User;
 
 import net.ChatNet;
 import net.CreateRoomNet;
+import net.ExitRoomNet;
 import net.IDNet;
 import net.LoginNet;
 import net.RegNet;
@@ -85,6 +86,8 @@ public class ServerMain{
 	private int linkednum = 0;
 	private static Vector<User> userList;
 	private static Vector<Room> roomList;
+	private final int MAXUSER = 10000;
+	private int needRemoveNum = 0;
 	
 	
 	class Server implements Runnable
@@ -244,6 +247,7 @@ public class ServerMain{
 							}else
 							{
 								String cmdStr = "INSERT INTO users VALUES("+"\'"+username+"\',\'"+passwd+"\',"+sex+",\'"+nickname+"\',\'"+email+"\',"+score+","+image+")";
+								System.out.println(cmdStr);
 								ExecSql.state.execute(cmdStr);
 								System.out.println(username+" register success!");
 								reg.setStatus(0);
@@ -322,6 +326,78 @@ public class ServerMain{
 						out.flush();
 						
 						roomList.add(room);
+						
+					break;
+					}
+					
+					case 7://退出房间
+					{
+						
+						ExitRoomNet exit = (ExitRoomNet) cmd;
+//需要修改						
+						int[] needRemove = new int[MAXUSER];
+						needRemoveNum = 0;
+						int num = 0;
+						
+						for(User u:userList)
+						{
+							
+							if(u.getUsername().equals(exit.getUser().getUsername()))
+							{
+								needRemoveNum++;
+								needRemove[needRemoveNum] = num;
+							}
+								num++;
+						}
+						
+						for(int i = 1;i<=needRemoveNum;i++)
+						{
+							userList.remove(needRemove[i]);
+						}
+
+						int[] needRemoveRoom = new int[MAXUSER];
+						int[] needRemoveUser = new int[MAXUSER];
+						int needRemoveRoomNum = 0;
+						int needRemoveUserNum = 0;
+						
+						int numRoom = 0;
+						
+						for(Room r:roomList)
+						{
+							Vector<User> ul = r.getUserList();
+							needRemoveUserNum = 0;
+							num = 0;
+							for(User u:ul)
+							{
+								if(u.getUsername().equals(exit.getUser().getUsername()))
+								{
+									needRemoveUserNum++;
+									needRemoveUser[needRemoveUserNum] = num;
+								}
+								num++;
+							}
+							
+							for(int i = 1;i<=needRemoveUserNum;i++)
+							{
+								ul.remove(needRemoveUser[i]);
+								
+							}
+							if(ul.isEmpty())
+							{
+								needRemoveRoomNum++;
+								needRemoveRoom[needRemoveRoomNum] = numRoom;
+							}
+							
+							numRoom++;
+							
+						}
+						
+						
+						for(int i = 1;i<=needRemoveRoomNum;i++)
+						{
+							roomList.remove(needRemoveRoom[i]);
+						}
+						
 						
 					break;
 					}
