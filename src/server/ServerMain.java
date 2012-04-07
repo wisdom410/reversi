@@ -31,6 +31,7 @@ import net.ChatNet;
 import net.CreateRoomNet;
 import net.ExitRoomNet;
 import net.IDNet;
+import net.JoinRoomNet;
 import net.LoginNet;
 import net.RegNet;
 import net.RoomListNet;
@@ -81,6 +82,24 @@ public class ServerMain{
 		
 		
 		
+	}
+	
+	/*
+	 * 用于验证此用户是否已经在某房间里了
+	 */
+	private boolean isInRoom(User usr)
+	{
+		for(Room r:roomList)
+		{
+			Vector<User> ul = r.getUserList();
+			for(User u:ul)
+			{
+				if(u.getUsername().equals(usr.getUsername()))
+					return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private int linkednum = 0;
@@ -315,6 +334,14 @@ public class ServerMain{
 							}
 						}
 						
+						if(isInRoom(cre.getUser()))
+						{
+							cre.setStatus(2);
+							out.writeObject(cre);
+							out.flush();
+							return;
+						}
+						
 						Room room = new Room(cre.getRoomName());
 						cre.getUser().setPlayer(true);
 						
@@ -334,7 +361,6 @@ public class ServerMain{
 					{
 						
 						ExitRoomNet exit = (ExitRoomNet) cmd;
-//需要修改						
 						int[] needRemove = new int[MAXUSER];
 						needRemoveNum = 0;
 						int num = 0;
@@ -379,6 +405,10 @@ public class ServerMain{
 							
 							for(int i = 1;i<=needRemoveUserNum;i++)
 							{
+								if(ul.get(needRemoveUser[i]).getUsername().equals(r.getPlayer1()))
+									r.setPlayer1(new User("",3,"","",0,0));
+								if(ul.get(needRemoveUser[i]).getUsername().equals(r.getPlayer2()))
+									r.setPlayer2(new User("",3,"","",0,0));
 								ul.remove(needRemoveUser[i]);
 								
 							}
@@ -402,6 +432,38 @@ public class ServerMain{
 					break;
 					}
 					
+					case 8:
+					{
+						JoinRoomNet join = (JoinRoomNet) cmd;
+						
+						if(isInRoom(join.getUser()))
+						{
+							join.setStatus(1);
+							out.writeObject(join);
+							out.flush();
+							return;
+						}
+						
+						for(Room r:roomList)
+						{
+							if(r.getRoomName().equals(join.getRoom().getRoomName()))
+							{
+								r.addUser(join.getUser());
+								
+								if(r.getPlayer1().length()==0)
+									r.setPlayer1(join.getUser());
+								else
+									r.setPlayer2(join.getUser());
+								
+								join.setStatus(0);
+								out.writeObject(join);
+								out.flush();
+								return;
+							}
+						}
+						
+					break;
+					}
 					
 					}//end switch
 				} catch (IOException e){

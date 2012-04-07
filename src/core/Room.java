@@ -130,6 +130,20 @@ public class Room  implements Serializable{
 		return play2;
 	}
 	
+	public boolean isPlayer1isEmpty()
+	{
+		if(play1.length()==0)
+			return true;
+		return false;
+	}
+	
+	public boolean isPlayer2isEmpty()
+	{
+		if(play2.length()==0)
+			return true;
+		return false;
+	}
+	
 	public void setPlayer1(User user)
 	{
 		this.play1 = user.getUsername();

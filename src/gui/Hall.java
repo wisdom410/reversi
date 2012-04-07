@@ -43,6 +43,7 @@ import javax.swing.table.AbstractTableModel;
 
 import net.CreateRoomNet;
 import net.IDNet;
+import net.JoinRoomNet;
 import net.RoomListNet;
 
 import core.User;
@@ -64,7 +65,7 @@ public class Hall extends JFrame{
 		
 		this.user = user;
 		
-		this.setTitle("网络版黑白棋大厅");
+		this.setTitle("网络版黑白棋大厅--"+user.getUsername());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ImageIcon ico = new ImageIcon("res"+File.separator+"ico.png");
 		this.setIconImage(ico.getImage());
@@ -177,15 +178,20 @@ public class Hall extends JFrame{
 					{
 						CreateRoomNet cmd = (CreateRoomNet) backCmd;
 						
+						if(cmd.getStatus()==2)
+						{
+							showDialog("你已经在房间中，请退出房间后重试！");
+							return;
+						}
 						if(cmd.getStatus() == 1)
 						{
 							showDialog("此房间已经存在！");
+							return;
 						}
 						if(cmd.getStatus() == 0)
 						{
 							//showDialog("创建成功！");
 							refreshFunc();
-//需要修改
 							new ChessFrame(roomList.get(roomList.size()-1),user);
 							
 						}
@@ -206,6 +212,40 @@ public class Hall extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				int selected = table.getSelectedRow();
+				Room r = roomList.get(selected);
+				JoinRoomNet join = new JoinRoomNet(user,r);
+				
+				try {
+					
+					connect();
+					ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+					
+					out.writeObject(join);
+					out.flush();
+					
+					ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
+					
+					join = (JoinRoomNet) in.readObject();
+					
+					if(join.getStatus()==1)
+					{
+						showDialog("你已经在房间中，请退出房间后重试！");
+						return;
+					}
+					
+					if(join.getStatus()==0)
+					{
+						showDialog("加入游戏成功！");
+						
+					}
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				
 				
 			}
 		});
@@ -215,6 +255,8 @@ public class Hall extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				
+				
 				
 			}
 		});
