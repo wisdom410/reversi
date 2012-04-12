@@ -584,13 +584,29 @@ public class ServerMain{
 							if(r.getRoomName().equals(chess.getRoom().getRoomName()))
 							{
 								
-							//	r.chat+="a.\n";
-								chess = new ChessFrameNet(r);
 								
-								out.writeObject(chess);
-								out.flush();
+								if(chess.getStatus()==0)
+								{
+									chess = new ChessFrameNet(r);
+									
+									out.writeObject(chess);
+									out.flush();
+									
+									return;
+								}
 								
-								return;
+								if(chess.getStatus()==1)
+								{
+									r.setChessManList(chess.getRoom().getChessManList());
+									
+									if(r.getNext().equals(r.getPlayer1()))
+									{
+										r.setNext(r.getPlayer2());
+									}else
+									{
+										r.setNext(r.getPlayer1());
+									}
+								}
 								
 							}
 						}
@@ -624,18 +640,20 @@ public class ServerMain{
 									
 									r.chat+="开始游戏！\n";
 									
-									int a = (int) Math.random()*100;
+									int a = (int) Math.random()*1000;
 									
 									if(a%2==0)
 									{
+										r.setNext(ready.getR().getPlayer1());
 										r.setBlack(ready.getR().getPlayer1());
-										r.chat+=ready.getR().getPlayer1()+" 是 先手黑棋\n";
-										r.chat+=ready.getR().getPlayer2()+" 是 后手白棋\n";
+										r.chat+=r.getPlayer1()+" 是 先手黑棋\n";
+										r.chat+=r.getPlayer2()+" 是 后手白棋\n";
 									}else
 									{
+										r.setNext(ready.getR().getPlayer2());
 										r.setBlack(ready.getR().getPlayer2());
-										r.chat+=ready.getR().getPlayer2()+" 是 先手黑棋\n";
-										r.chat+=ready.getR().getPlayer1()+" 是 后手白棋\n";
+										r.chat+=r.getPlayer2()+" 是 先手黑棋\n";
+										r.chat+=r.getPlayer1()+" 是 后手白棋\n";
 									}
 									
 									

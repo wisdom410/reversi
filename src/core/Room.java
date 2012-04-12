@@ -36,7 +36,8 @@ public class Room  implements Serializable{
 		chessManList.add(4, 5, true);
 		chessManList.add(5, 4, true);
 		chessManList.add(5, 5, false);
-		black ="";
+		next ="";
+		black = "";
 
 		
 	}
@@ -177,14 +178,14 @@ public class Room  implements Serializable{
 		return this.chessManList;
 	}
 	
-	public void setBlack(String s)
+	public void setNext(String s)
 	{
-		this.black = s;
+		this.next = s;
 	}
 	
-	public String getBlack()
+	public String getNext()
 	{
-		return this.black;
+		return this.next;
 	}
 	
 	public void setPlayer1Ready(boolean b)
@@ -215,6 +216,18 @@ public class Room  implements Serializable{
 		return image2;
 	}
 	
+	public void setBlack(String s)
+	{
+		this.black = s;
+	}
+	
+	public String getBlack()
+	{
+		return this.black;
+	}
+	
+	
+	
 //	public String getChat()
 //	{
 //		return chat;
@@ -235,6 +248,7 @@ public class Room  implements Serializable{
 	private boolean canview;
 	private Vector<User> userList;
 	private ChessManList chessManList;
+	private String next;
 	private String black;
 	public String chat;
 }

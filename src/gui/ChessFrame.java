@@ -135,14 +135,6 @@ public class ChessFrame extends JFrame{
 
 		chessManList = room.getChessManList();
 		
-		if(room.getBlack().equals(user.getUsername()))
-		{
-			black = true;
-		}else
-		{
-			black = false;
-		}
-
 		canPlace = new ChessManList();
 		
 
@@ -285,6 +277,7 @@ public class ChessFrame extends JFrame{
 	 */
 	private ChessManList turnChessMan(ChessMan chessMan)
 	{
+		
 		final int[] dx = {0,-1,-1,-1,0,1,1,1};
 		final int[] dy = {-1,-1,0,1,1,1,0,-1};
 		boolean can = false;
@@ -335,8 +328,6 @@ public class ChessFrame extends JFrame{
 				}
 
 		return newList;
-
-
 
 	}
 
@@ -404,6 +395,8 @@ public class ChessFrame extends JFrame{
 		
 			ChessFrameNet chess = new ChessFrameNet(this.room);
 			
+			chess.setStatus(0);
+			
 			out.writeObject(chess);
 			out.flush();
 			
@@ -417,26 +410,35 @@ public class ChessFrame extends JFrame{
 			chessManList = room.getChessManList();		
 			
 			
-			//System.out.println(room.chat);
+			System.out.println(room.getBlack()+"   "+user.getUsername());
 			
-			System.out.println(room.getBlack());
+			if(!user.getUsername().equals(room.getBlack()))
+				black = true;
+			else
+				black = false;
+			
 			
 			canPlace.clear();
 			
-				if((room.getBlack().equals(user.getUsername())))
+			if((room.getNext().equals(user.getUsername())))
+			{
+				for(int i = 0; i< chessManList.getSize();i++)
 				{
-					canPlace.clear();
-					for(int i = 0; i< chessManList.getSize();i++)
+					if(chessManList.getChessMan(i).isBlack() != black) 
 					{
-						if(chessManList.getChessMan(i).isBlack() != black) 
-						{
-							findCanPlace(chessManList.getChessMan(i));
-						}
+						findCanPlace(chessManList.getChessMan(i));
 					}
 				}
+			}
+			
+				
+			mainPanel.update(chessManList, canPlace);
+			
 			mainPanel.repaint();
 			
-			rightPanel.textArea.setText(room.chat);
+			if(!room.chat.equals(rightPanel.textArea.getText()))
+				rightPanel.textArea.setText(room.chat);
+			
 		}catch (Exception e)
 		{
 			e.printStackTrace();
@@ -444,6 +446,34 @@ public class ChessFrame extends JFrame{
 		
 	}
 
+	/*
+	 * 向服务器传送下棋信息
+	 */
+	private void pushChessBoard()
+	{
+		try {
+			
+			connect();
+			
+			ChessFrameNet chess = new ChessFrameNet(room);
+			
+			chess.setStatus(1);
+			
+			ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+			
+			out.writeObject(chess);
+			out.flush();
+			
+			out.close();
+			
+			s.close();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	//var
 	private RightJPanel  rightPanel;
 	private ImageChessBoard mainPanel;
@@ -491,86 +521,17 @@ public class ChessFrame extends JFrame{
 
 			if(chessManList.havaChessman(pos_x, pos_y) || !canPlace.havaChessman(pos_x, pos_y)) return ;
 
-			chessManList = turnChessMan(new ChessMan(pos_x, pos_y, black));
+			chessManList = turnChessMan(new ChessMan(pos_x, pos_y, !black));
 
-			chessManList.add(pos_x, pos_y, black);
+			chessManList.add(pos_x, pos_y, !black);
 			mainPanel.update(chessManList, canPlace);
+			
+			
+			pushChessBoard();
+			
 			//System.out.println(pos_x+" "+pos_y);
-
-			
-			
-			
-			
-
-
 			canPlace.clear();
-
-			for(int i = 0; i< chessManList.getSize();i++)
-			{
-				if(chessManList.getChessMan(i).isBlack() != black) 
-				{
-					findCanPlace(chessManList.getChessMan(i));
-				}
-			}
-
-
-			
-			
 			mainPanel.repaint();
-
-			if(chessManList.getSize() == 64)
-			{
-				finish();
-				return;
-			}
-
-			if(canPlace.getSize() != 0)
-			{
-				black = !black;
-				count = 0;
-			}else
-			{
-				count ++;
-				System.out.println(!black+"  is skip!");
-				System.out.println("count="+count);
-				for(int i = 0; i< chessManList.getSize();i++)
-				{
-					if(chessManList.getChessMan(i).isBlack() == black)
-					{
-						findCanPlace(chessManList.getChessMan(i));
-					}
-				}
-				if(canPlace.getSize() ==0)
-					count ++;
-				if(count ==2)
-				{
-					finish();
-					return;
-				}
-
-
-			}
-
-			try {
-				undoChessManList[++now_step] = new ChessManList();
-				for(ChessMan c : chessManList.getList())
-				{
-					undoChessManList[now_step].add(c.clone());
-				}
-
-				if(!black)
-					undoChessManList[now_step].black = true;
-				else
-					undoChessManList[now_step].black = false;
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			//System.out.println(black);
-
-			
-
 		}
 	}
 	
