@@ -166,7 +166,7 @@ public class ChessFrame_old extends JFrame{
 		this.add(mainPanel);
 
 
-		rightPanel = new RightJPanel();
+		//rightPanel = new RightJPanel();
 		this.add(rightPanel, BorderLayout.EAST);
 
 	}

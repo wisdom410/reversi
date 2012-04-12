@@ -28,13 +28,16 @@ import core.User;
 
 
 import net.ChatNet;
+import net.ChessFrameNet;
 import net.CreateRoomNet;
 import net.ExitRoomNet;
 import net.IDNet;
 import net.JoinRoomNet;
 import net.LoginNet;
+import net.Ready;
 import net.RegNet;
 import net.RoomListNet;
+import net.ViewRoomNet;
 
 public class ServerMain{
 
@@ -50,24 +53,30 @@ public class ServerMain{
 			ExecSql.connected();
 			
 			Thread clearUser = new ClearUsers();
-			clearUser.start();
+			//clearUser.start();
 			
 			
 			while(true)
 			{
 				
 				linkednum++;
+				if(Long.MAX_VALUE==linkednum)
+				{
+					linkednum=0;
+					System.out.println("This server can't server for so much users!");
+					
+				}
 				
 				Socket incoming = s.accept();
 				Runnable r = new Server(incoming);
 				Thread t = new Thread(r);
 				t.start();
 				
-				System.out.println("Num "+linkednum+":");
-				System.out.println("Connect From: "+
-						s.getInetAddress().getHostName()+"\t"+
-						s.getInetAddress().getHostAddress()
-				);
+				//System.out.println("Num "+linkednum+":");
+				//System.out.println("Connect From: "+
+				//		s.getInetAddress().getHostName()+"\t"+
+			//			s.getInetAddress().getHostAddress()
+				//);
 					
 				
 			}
@@ -101,8 +110,117 @@ public class ServerMain{
 		
 		return false;
 	}
+	/*
+	 * 用来从房间或大厅中清除用户,清除没有玩家的房间
+	 */
+	private void removeUser(User user)
+	{
+		int[] needRemove = new int[MAXUSER];
+		needRemoveNum = 0;
+		int num = 0;
+		
+		for(User u:userList)
+		{
+			
+			if(u.getUsername().equals(user.getUsername()))
+			{
+				needRemoveNum++;
+				needRemove[needRemoveNum] = num;
+			}
+				num++;
+		}
+		
+		for(int i = 1;i<=needRemoveNum;i++)
+		{
+			userList.remove(needRemove[i]);
+		}
+
+		int[] needRemoveRoom = new int[MAXUSER];
+		int[] needRemoveUser = new int[MAXUSER];
+		int needRemoveRoomNum = 0;
+		int needRemoveUserNum = 0;
+		
+		int numRoom = 0;
+		
+		for(Room r:roomList)
+		{
+			Vector<User> ul = r.getUserList();
+			needRemoveUserNum = 0;
+			num = 0;
+			for(User u:ul)
+			{
+				if(u.getUsername().equals(user.getUsername()))
+				{
+					needRemoveUserNum++;
+					needRemoveUser[needRemoveUserNum] = num;
+				}
+				num++;
+			}
+			
+			for(int i = 1;i<=needRemoveUserNum;i++)
+			{
+				if(ul.get(needRemoveUser[i]).getUsername().equals(r.getPlayer1()))
+				{
+					r.setPlayer1(new User("",3,"","",0,0));
+				}
+				if(ul.get(needRemoveUser[i]).getUsername().equals(r.getPlayer2()))
+				{
+					r.setPlayer2(new User("",3,"","",0,0));
+				}
+				ul.remove(needRemoveUser[i]);
+				
+			}
+			if(ul.isEmpty())
+			{
+				needRemoveRoomNum++;
+				needRemoveRoom[needRemoveRoomNum] = numRoom;
+			}
+			
+			numRoom++;
+			
+		}
+		
+		
+		for(int i = 1;i<=needRemoveRoomNum;i++)
+		{
+			roomList.remove(needRemoveRoom[i]);
+		}
+		needRemoveRoomNum = 0;
+		num = 0;
+		
+		for(Room r:roomList)
+		{
+			if(r.getPlayer1().equals("")&&r.getPlayer2().equals(""))
+			{
+				needRemoveRoomNum++;
+				needRemoveRoom[needRemoveRoomNum] = num;
+			}
+			num++;
+		}
+		
+		for(int i = 1;i<=needRemoveRoomNum;i++)
+		{
+			roomList.remove(needRemoveRoom[i]);
+		}
+		
+	}
 	
-	private int linkednum = 0;
+	private void upDateRoomList(Room room)
+	{
+		for(Room r:roomList)
+		{
+			if(r.getRoomName().equals(room.getRoomName()))
+			{
+				r = room;
+				System.out.println("updateRoom"+r.getRoomName());
+				return;
+			}
+		}
+	}
+	
+	
+	
+	private long linkednum = 0;
 	private static Vector<User> userList;
 	private static Vector<Room> roomList;
 	private final int MAXUSER = 10000;
@@ -283,6 +401,22 @@ public class ServerMain{
 					break;
 					}
 					
+					case 4://客户端向服务器发送聊天信息
+					{
+						ChatNet chatNet = (ChatNet) cmd;
+						
+						for(Room r:roomList)
+						{
+							if(r.getRoomName().equals(chatNet.getRoom().getRoomName()))
+							{
+								r.chat+=chatNet.getUser().getUsername()+" 说："+chatNet.getMsg()+"\n";
+								return;
+							}
+						}
+						
+					break;	
+					}
+					
 					case 5://房间列表
 					{
 //						roomList.add(new Room("server1"));
@@ -361,78 +495,15 @@ public class ServerMain{
 					{
 						
 						ExitRoomNet exit = (ExitRoomNet) cmd;
-						int[] needRemove = new int[MAXUSER];
-						needRemoveNum = 0;
-						int num = 0;
-						
-						for(User u:userList)
-						{
-							
-							if(u.getUsername().equals(exit.getUser().getUsername()))
-							{
-								needRemoveNum++;
-								needRemove[needRemoveNum] = num;
-							}
-								num++;
-						}
-						
-						for(int i = 1;i<=needRemoveNum;i++)
-						{
-							userList.remove(needRemove[i]);
-						}
+						System.out.println("received exit:"+exit.getUser().getUsername());
 
-						int[] needRemoveRoom = new int[MAXUSER];
-						int[] needRemoveUser = new int[MAXUSER];
-						int needRemoveRoomNum = 0;
-						int needRemoveUserNum = 0;
-						
-						int numRoom = 0;
-						
-						for(Room r:roomList)
-						{
-							Vector<User> ul = r.getUserList();
-							needRemoveUserNum = 0;
-							num = 0;
-							for(User u:ul)
-							{
-								if(u.getUsername().equals(exit.getUser().getUsername()))
-								{
-									needRemoveUserNum++;
-									needRemoveUser[needRemoveUserNum] = num;
-								}
-								num++;
-							}
-							
-							for(int i = 1;i<=needRemoveUserNum;i++)
-							{
-								if(ul.get(needRemoveUser[i]).getUsername().equals(r.getPlayer1()))
-									r.setPlayer1(new User("",3,"","",0,0));
-								if(ul.get(needRemoveUser[i]).getUsername().equals(r.getPlayer2()))
-									r.setPlayer2(new User("",3,"","",0,0));
-								ul.remove(needRemoveUser[i]);
-								
-							}
-							if(ul.isEmpty())
-							{
-								needRemoveRoomNum++;
-								needRemoveRoom[needRemoveRoomNum] = numRoom;
-							}
-							
-							numRoom++;
-							
-						}
-						
-						
-						for(int i = 1;i<=needRemoveRoomNum;i++)
-						{
-							roomList.remove(needRemoveRoom[i]);
-						}
+						removeUser(exit.getUser());
 						
 						
 					break;
 					}
 					
-					case 8:
+					case 8://加入房间
 					{
 						JoinRoomNet join = (JoinRoomNet) cmd;
 						
@@ -462,6 +533,128 @@ public class ServerMain{
 							}
 						}
 						
+					break;
+					}
+					
+					case 9://申请观看当前房间
+					{
+						ViewRoomNet view = (ViewRoomNet) cmd;
+						
+						if(isInRoom(view.getUser()))
+						{
+							view.setStatus(2);
+							out.writeObject(view);
+							out.flush();
+							return;
+						}
+						
+						if(!view.getRoom().getcanView())
+						{
+							view.setStatus(1);
+							out.writeObject(view);
+							out.flush();
+							return;
+						}
+						
+						for(Room r:roomList)
+						{
+							if(r.getRoomName().equals(view.getRoom().getRoomName()))
+							{
+								r.addUser(view.getUser());
+								
+								view.setStatus(0);
+								out.writeObject(view);
+								out.flush();
+								return;
+							}
+						}
+						
+					break;	
+					}
+					
+					case 10://获取房间内信息
+					{
+						ChessFrameNet chess = (ChessFrameNet) cmd;
+						
+						
+						//System.out.println("receieved from client "+chess.getRoom().chat);
+						
+						for(Room r:roomList)
+						{
+							if(r.getRoomName().equals(chess.getRoom().getRoomName()))
+							{
+								
+							//	r.chat+="a.\n";
+								chess = new ChessFrameNet(r);
+								
+								out.writeObject(chess);
+								out.flush();
+								
+								return;
+								
+							}
+						}
+						
+					break;	
+					}
+//需要修改					
+					case 11://告诉服务器点击了准备按钮
+					{
+						Ready ready = (Ready) cmd;
+
+						
+						System.out.println(ready.getU().getUsername());
+						System.out.println(ready.getR().getRoomName());
+						
+						for(Room r:roomList)
+						{
+							if(r.getRoomName().equals(ready.getR().getRoomName()))
+							{
+								if(r.getPlayer1().equals(ready.getU().getUsername()))
+								{
+									r.setPlayer1Ready(true);
+								}
+								if(r.getPlayer2().equals(ready.getU().getUsername()))
+								{
+									r.setPlayer2Ready(true);
+								}
+								
+								if(r.getPlayer1Ready()&&r.getPlayer2Ready())
+								{
+									
+									r.chat+="开始游戏！\n";
+									
+									int a = (int) Math.random()*100;
+									
+									if(a%2==0)
+									{
+										r.setBlack(ready.getR().getPlayer1());
+										r.chat+=ready.getR().getPlayer1()+" 是 先手黑棋\n";
+										r.chat+=ready.getR().getPlayer2()+" 是 后手白棋\n";
+									}else
+									{
+										r.setBlack(ready.getR().getPlayer2());
+										r.chat+=ready.getR().getPlayer2()+" 是 先手黑棋\n";
+										r.chat+=ready.getR().getPlayer1()+" 是 后手白棋\n";
+									}
+									
+									
+									r.setStatus("游戏中...");
+									//System.out.println(ready.getR().chat);
+									
+									
+									
+								}else
+								{
+									r.setStatus("等待玩家");
+								}
+								
+								
+								upDateRoomList(ready.getR());
+					
+						break;
+							}
+						}
 					break;
 					}
 					

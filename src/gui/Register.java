@@ -79,7 +79,6 @@ public class Register extends JFrame{
 				
 				try {
 					
-					connect();
 					
 					String username = usernameField.getText().trim();
 					char[] passwd = passwdField.getPassword();
@@ -117,6 +116,7 @@ public class Register extends JFrame{
 						}
 					}
 					
+					connect();
 					
 					RegNet reg = new RegNet(username,passwd,sex,nickname,email,0,sex);
 					

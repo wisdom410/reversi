@@ -18,11 +18,16 @@ public class Room  implements Serializable{
 		this.roomName = roomName;
 		
 		userList = new Vector<User>();
+		chat ="";
+		
 		
 		play1 = "";
 		play2 = "";
 		
 		status = "等待玩家";
+		
+		player1Ready = player2Ready = false;
+		
 		canview = true;
 		
 		chessManList = new ChessManList();
@@ -31,7 +36,7 @@ public class Room  implements Serializable{
 		chessManList.add(4, 5, true);
 		chessManList.add(5, 4, true);
 		chessManList.add(5, 5, false);
-		black = true;
+		black ="";
 
 		
 	}
@@ -39,8 +44,8 @@ public class Room  implements Serializable{
 	
 	private void flushRoom()
 	{
-		play1 = "";
-		play2 = "";
+		//play1 = "";
+		//play2 = "";
 		score1 = 0;
 		score2 = 0;
 		image1 = 0;
@@ -120,6 +125,10 @@ public class Room  implements Serializable{
 		return status;
 	}
 	
+	public void setStatus(String s)
+	{
+		status = s;
+	}
 	public String getPlayer1()
 	{
 		return play1;
@@ -168,23 +177,64 @@ public class Room  implements Serializable{
 		return this.chessManList;
 	}
 	
-	public void setBlack(boolean b)
+	public void setBlack(String s)
 	{
-		this.black = b;
+		this.black = s;
 	}
 	
-	public boolean getBlack()
+	public String getBlack()
 	{
 		return this.black;
 	}
 	
+	public void setPlayer1Ready(boolean b)
+	{
+		player1Ready = b;
+	}
+	public boolean getPlayer1Ready()
+	{
+		return player1Ready;
+	}
+	
+	public void setPlayer2Ready(boolean b)
+	{
+		player2Ready = b;
+	}
+	public boolean getPlayer2Ready()
+	{
+		return player2Ready;
+	}
+	
+	public int getImage1()
+	{
+		return image1;
+	}
+	
+	public int getImage2()
+	{
+		return image2;
+	}
+	
+//	public String getChat()
+//	{
+//		return chat;
+//	}
+//	
+//	public void addChat(String s)
+//	{
+//		this.chat+=s;
+//		System.out.println("Sth. add "+s);
+//	}
+	
 	private String roomName;
 	private String play1,play2;
+	private boolean player1Ready,player2Ready;
 	private String status;
 	private int score1,score2;
 	private int image1,image2;
 	private boolean canview;
 	private Vector<User> userList;
 	private ChessManList chessManList;
-	private boolean black;
+	private String black;
+	public String chat;
 }

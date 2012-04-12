@@ -12,27 +12,45 @@ import java.awt.event.*;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.Properties;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import net.ChatNet;
+
+import core.Room;
+import core.User;
 
 /*
  * RightPanel
  */
 public class RightJPanel extends JPanel{
 
-	public RightJPanel()
+	public RightJPanel(User user , Room room)
 	{
 		super();
 
 		this.setLayout(new BorderLayout());
 		addPanel();
+		
+		this.user = user;
+		this.room = room;
 	}
 
 	private void addPanel()
@@ -64,7 +82,7 @@ public class RightJPanel extends JPanel{
 
 		JPanel funcPanel = new JPanel();
 		funcPanel.add(sendButton);
-		funcPanel.add(faceButton);
+		//funcPanel.add(faceButton);
 
 		JPanel panelIndown = new JPanel();
 		panelIndown.setLayout(new BorderLayout());
@@ -76,14 +94,53 @@ public class RightJPanel extends JPanel{
 		this.add(downPanel, BorderLayout.SOUTH);
 
 	}
+	
+	
+	/*
+	 * 连接服务器
+	 */
+	private void connect() throws Exception 
+	{
+		
+		
+		Properties props = new Properties();
+		FileInputStream in = new FileInputStream("config"+File.separator+"serverAddress.props");
+		props.load(in);
+		in.close();
+		
+		String serveraddr = props.getProperty("Server");
+		
+		s = new Socket();
+		try {
+			s.connect(new InetSocketAddress(serveraddr, 8090),3000);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
+		}
+	}
 
+
+	/*
+	 * 对话框
+	 */
+	private void showDialog(String str)
+	{
+		JOptionPane.showMessageDialog(this, str);
+
+	}
+	
+
+	
 
 	//var
-	JPanel downPanel;
-	JTextArea textArea;
-	JTextField textField;
-	JButton sendButton, faceButton;
-
+	private JPanel downPanel;
+	public JTextArea textArea;
+	private JTextField textField;
+	private JButton sendButton, faceButton;
+	private Socket s;
+	private User user;
+	private Room room;
+	
 	/*
 	 * 内部enter键监听类
 	 */
@@ -93,7 +150,33 @@ public class RightJPanel extends JPanel{
 		public void actionPerformed(ActionEvent event)
 		{
 			if(textField.getText().equals("")) return;
-			textArea.append("\n"+textField.getText());
+			
+			ChatNet chatNet = new ChatNet(user,room,textField.getText());
+			try {
+				
+				connect();
+				
+				ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+				
+				out.writeObject(chatNet);
+				out.flush();
+				
+				
+				out.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally
+			{
+				try {
+					s.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			
 			textField.setText("");
 		}
 	}
@@ -107,7 +190,32 @@ public class RightJPanel extends JPanel{
 			if(event.getKeyCode() == KeyEvent.VK_ENTER)
 			{
 				if(textField.getText().equals("")) return;
-				textArea.append("\n"+textField.getText());
+				
+				ChatNet chatNet = new ChatNet(user,room,textField.getText());
+				try {
+					
+					connect();
+					
+					ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+					
+					out.writeObject(chatNet);
+					out.flush();
+					
+					
+					out.close();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}finally
+				{
+					try {
+						s.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
 				textField.setText("");
 			}
 		}

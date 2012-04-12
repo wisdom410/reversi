@@ -15,6 +15,8 @@ import java.awt.Font;
 import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -42,9 +44,11 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import net.CreateRoomNet;
+import net.ExitRoomNet;
 import net.IDNet;
 import net.JoinRoomNet;
 import net.RoomListNet;
+import net.ViewRoomNet;
 
 import core.User;
 import core.Room;
@@ -59,11 +63,11 @@ import core.HallTableModel;
  */
 public class Hall extends JFrame{
 		
-	public Hall(User user) 
+	public Hall(User u) 
 	{
 		super();
 		
-		this.user = user;
+		this.user = u;
 		
 		this.setTitle("网络版黑白棋大厅--"+user.getUsername());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,6 +78,32 @@ public class Hall extends JFrame{
 		this.setMaximumSize(new Dimension(800, 600));
 		this.setResizable(false);
 		this.setLayout(new BorderLayout());
+		
+		this.addWindowListener(new WindowAdapter() {
+			
+			public void windowClosing(WindowEvent e){
+				
+				ExitRoomNet exit = new ExitRoomNet(user);
+				
+				try {
+					connect();
+					
+					ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+					
+					out.writeObject(exit);
+					out.flush();
+					
+					out.close();
+					
+					
+//					System.out.println("send exit");
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		
 		addelement();
 		
@@ -92,7 +122,6 @@ public class Hall extends JFrame{
 		JLabel title = new JLabel("<html><font size=10 color =blue>房间列表</font></html>",SwingConstants.CENTER);
 		cenPanel.add(title,BorderLayout.NORTH);
 		
-		columnName = new Vector<String>();
 		
 		model = new HallTableModel();
 		
@@ -107,7 +136,8 @@ public class Hall extends JFrame{
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				// TODO Auto-generated method stub
-				System.out.println(table.getSelectedRow());
+				//System.out.println(table.getSelectedRow());
+				if(table.getSelectedRow()==-1) return;
 				Room selectRoom = roomList.get(table.getSelectedRow());
 				if(selectRoom.getPlayer1().length()==0||selectRoom.getPlayer2().length()==0)
 				{
@@ -136,6 +166,9 @@ public class Hall extends JFrame{
 		
 		joinRoom.setEnabled(false);
 		viewRoom.setEnabled(false);
+	
+		//已经抛弃
+		//-------------------
 		refresh.addActionListener(new ActionListener() {
 			
 			@Override
@@ -146,7 +179,7 @@ public class Hall extends JFrame{
 				
 			}
 		});
-		
+		//-------------------
 		createRoom.addActionListener(new ActionListener() {
 			
 			@Override
@@ -154,16 +187,23 @@ public class Hall extends JFrame{
 				// TODO Auto-generated method stub
 				try {
 					
-					String roomName = javax.swing.JOptionPane.showInputDialog("请输入房间名:");
+					table.clearSelection();
 					
-					if(roomName.length() == 0||roomName.equals("null"))
+					
+					String roomName = null;
+					roomName = javax.swing.JOptionPane.showInputDialog("请输入房间名:");
+					
+//					System.out.println("roomName="+roomName);
+					
+					if(roomName==null||roomName.length() == 0)
 					{
 						showDialog("房间名不合法！");
 						return ;
 					}
 					
 					connect();
-					
+
+					user.setPlayer(true);
 					CreateRoomNet requireCreateRoom = new CreateRoomNet(roomName, user);
 					
 					out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
@@ -180,7 +220,7 @@ public class Hall extends JFrame{
 						
 						if(cmd.getStatus()==2)
 						{
-							showDialog("你已经在房间中，请退出房间后重试！");
+							showDialog("您已经在房间中，请退出房间后重试！");
 							return;
 						}
 						if(cmd.getStatus() == 1)
@@ -214,6 +254,7 @@ public class Hall extends JFrame{
 				// TODO Auto-generated method stub
 				int selected = table.getSelectedRow();
 				Room r = roomList.get(selected);
+				user.setPlayer(true);
 				JoinRoomNet join = new JoinRoomNet(user,r);
 				
 				try {
@@ -230,13 +271,15 @@ public class Hall extends JFrame{
 					
 					if(join.getStatus()==1)
 					{
-						showDialog("你已经在房间中，请退出房间后重试！");
+						showDialog("您已经在房间中，请退出房间后重试！");
 						return;
 					}
 					
 					if(join.getStatus()==0)
 					{
-						showDialog("加入游戏成功！");
+						//showDialog("加入游戏成功！");
+						user.setPlayer(true);
+						new ChessFrame(roomList.get(selected),user);
 						
 					}
 					
@@ -245,6 +288,7 @@ public class Hall extends JFrame{
 					e1.printStackTrace();
 				}
 				
+				table.clearSelection();
 				
 				
 			}
@@ -255,8 +299,45 @@ public class Hall extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				int selected = table.getSelectedRow();
+				Room r = roomList.get(selected);
+				user.setPlayer(false);
+				ViewRoomNet view = new ViewRoomNet(user,r);
+				
+				try {
+					connect();
+					ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+					
+					out.writeObject(view);
+					out.flush();
+					
+					ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
+					
+					view = (ViewRoomNet) in.readObject();
+					
+					if(view.getStatus()==2)
+					{
+						showDialog("您已经在房间中，请退出房间后重试！");
+						return;
+					}
+					if(view.getStatus()==1)
+					{
+						showDialog("此房间不允许观看！");
+						return;
+					}
+					if(view.getStatus()==0)
+					{
+						//showDialog("进入观看成功！");
+						new ChessFrame(roomList.get(selected),user);
+					}
+			
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				
 				
+				table.clearSelection();
 				
 			}
 		});
@@ -266,6 +347,25 @@ public class Hall extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				
+				ExitRoomNet exit = new ExitRoomNet(user);
+				
+				try {
+					connect();
+					
+					ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+					
+					out.writeObject(exit);
+					out.flush();
+					
+					out.close();
+					
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 				
 				System.exit(0);
 			}
@@ -322,7 +422,7 @@ public class Hall extends JFrame{
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			showDialog("网络连接错误！");
-			//e1.printStackTrace();
+			e1.printStackTrace();
 			System.exit(0);
 		}
 				
@@ -366,31 +466,14 @@ public class Hall extends JFrame{
 			
 	}
 	
-	public boolean getRun()
-	{
-		return isRun;
-	}
-	
-	public ObjectInputStream getIn()
-	{
-		return in;
-	}
-	
-	public ObjectOutputStream getOut()
-	{
-		return out;
-	}
-	
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private Socket s;
 	private Vector<Room> roomList;
 	private User user;
 	private JTable table;
-	private Vector<String> columnName;
 	private HallTableModel model;
 	private JButton joinRoom,viewRoom,exit,createRoom,refresh;
-	private boolean isRun = true;
 	
 	
 	class refreshTable extends Thread
