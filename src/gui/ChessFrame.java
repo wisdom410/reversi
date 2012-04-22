@@ -19,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,8 +38,9 @@ import javax.swing.JPanel;
 
 import net.ChessFrameNet;
 import net.ExitRoomNet;
+import net.LoseNet;
 import net.Ready;
-import net.UndoChess;
+import net.UndoChessNet;
 
 import core.ChessMan;
 import core.ChessManList;
@@ -203,16 +205,85 @@ public class ChessFrame extends JFrame{
 		undoButton.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+
+				if(room.getNext().equals(user.getUsername()))
+				{
+					
+					showDialog("非法操作！");
+					return;
+				}
+				UndoChessNet undo = new UndoChessNet(room, user);
 				
-				
+				try {
+					if(JOptionPane.showConfirmDialog(rootPane, "你确定悔棋吗？")==0)
+					{
+					
+						want_to_undo = true;
+						connect();
+						
+						ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+						
+						out.writeObject(undo);
+						out.flush();
+						
+						out.close();
+						s.close();
+					}
+						
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			
 
 			}
 		});
 		loseButton = new JButton("认输");
 		loseButton.setEnabled(false);
+		loseButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+				if(!room.getNext().equals(user.getUsername()))
+				{
+					
+					showDialog("非法操作！");
+					return;
+				}
+				
+				if(JOptionPane.showConfirmDialog(rootPane, "你确定要认输吗？")==0)
+				{
+					LoseNet lose = new LoseNet(room,user);
+				
+					try {
+					
+						connect();
+						
+						ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+						
+						out.writeObject(lose);
+						out.flush();
+						out.close();
+						
+						s.close();
+						
+					
+					
+						
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				
+			}
+		});
+		
 		saveButton = new JButton("保存");
 		saveButton.setEnabled(false);
 		loadButton = new JButton("加载");
@@ -392,21 +463,108 @@ public class ChessFrame extends JFrame{
 			ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
 			chess = (ChessFrameNet) in.readObject();
 			
-			
+			out.close();
+			in.close();
+			s.close();
 			
 			this.room = chess.getRoom();
 			
-			if(!room.getChessManList().equals(chessManList))
+			if(user.isPlayer())
 			{
-				undoStep++;
-				System.out.println("undo="+undoStep);
-				undoChessManList[undoStep] = new ChessManList();
-				
-				for(ChessMan c:chessManList.getList())
+				if(room.getUndo()==1||room.getUndo()==2)
 				{
-					undoChessManList[undoStep].add(c.clone());
+					boolean undoFlag = false;
+					if(room.getUndo()!=(room.getPlayer1().equals(user.getUsername()) ? 1:2))
+					{
+						if(JOptionPane.showConfirmDialog(rootPane, "对方要求悔棋，同意吗？")==0)
+						{
+							undoFlag = true;
+							//if(room.getNext().equals(room.getPlayer1()))
+								//room.setNext(room.getpl)
+							
+						}
+						
+						if(undoFlag)
+							room.setUndo(3);
+						else
+							room.setUndo(4);
+						
+						connect();
+						ObjectOutputStream out2 = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+						
+						UndoChessNet undo = new UndoChessNet(room, user);
+						
+						out2.writeObject(undo);
+						out2.flush();
+						out2.close();
+						
+						s.close();
+						
+					}
+					return;
+					
+				}
+				
+				if(want_to_undo)
+				{
+					if(room.getUndo()==4)
+					{
+						showDialog("对方不允许悔棋！");
+						want_to_undo = false;
+						room.setUndo(0);
+						
+						
+						connect();
+						ObjectOutputStream out2 = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+						
+						UndoChessNet undo = new UndoChessNet(room, user);
+						
+						out2.writeObject(undo);
+						out2.flush();
+						out2.close();
+						
+						s.close();
+						
+					}
+					if(room.getUndo()==3)
+					{
+						showDialog("对方同意悔棋！");
+						want_to_undo = false;
+						room.setUndo(0);
+						undoStep--;
+						if (undoStep<=0) undoStep = 1;
+						
+						ChessManList newChess = new ChessManList();
+						for(ChessMan c:room.getUndoChessManList().getList())
+						{
+							newChess.add(c);
+						}
+						
+						room.setChessManList(newChess);
+						pushChessBoard();
+					}
+					
+					
+					
+//					connect();
+//					ObjectOutputStream out2 = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+//					
+//					UndoChessNet undo = new UndoChessNet(room, user);
+//					
+//					out2.writeObject(undo);
+//					out2.flush();
+//					out2.close();
+//					
+//					s.close();
+					
 				}
 			}
+			
+			
+
+			if(!room.chat.equals(rightPanel.textArea.getText()))
+				rightPanel.textArea.setText(room.chat);
+				
 			
 			//System.out.println("read chessFrameNet From server OK!");
 			chessManList = room.getChessManList();		
@@ -424,8 +582,6 @@ public class ChessFrame extends JFrame{
 			
 			num_can = 0;
 			
-			undoButton.setEnabled(false);
-			loseButton.setEnabled(false);
 			
 			if((room.getNext().equals(user.getUsername())))
 			{
@@ -436,16 +592,11 @@ public class ChessFrame extends JFrame{
 						findCanPlace(chessManList.getChessMan(i));
 					}
 				}
-				undoButton.setEnabled(true);
-				loseButton.setEnabled(true);
 			}
 			
-			if(!room.chat.equals(rightPanel.textArea.getText()))
-				rightPanel.textArea.setText(room.chat);
-				
-			mainPanel.update(chessManList, canPlace);
+			if(want_to_undo) canPlace.clear();
 			
-			mainPanel.repaint();
+		
 			
 			if(room.getNext().equals(user.getUsername())&&num_can==0)
 			{
@@ -463,9 +614,14 @@ public class ChessFrame extends JFrame{
 			
 			if(room.isFinish())
 			{
+				canPlace.clear();
+				
 				String str ="恭喜 "+room.getWin()+" 获得胜利！\n";
 				showDialog(str);
-				
+				if(room.getWin().equals(user.getUsername()))
+					user.setScore(user.getScore()+10);
+				else
+					user.setScore(user.getScore()-10);
 				
 				user.setPlayer(false);
 				ExitRoomNet exit = new ExitRoomNet(user);
@@ -491,10 +647,11 @@ public class ChessFrame extends JFrame{
 				}
 				
 			}
+			mainPanel.update(chessManList, canPlace);
 			
+			mainPanel.repaint();
 			
 			s.close();			
-			
 			
 		}catch (Exception e)
 		{
@@ -535,11 +692,11 @@ public class ChessFrame extends JFrame{
 	private RightJPanel  rightPanel;
 	private ImageChessBoard mainPanel;
 	private ChessManList chessManList, canPlace;
-	private ChessManList[] undoChessManList = new ChessManList[1000];
 	private int undoStep =0;
 	private JButton loseButton, undoButton, saveButton, loadButton, readyButton;
 	private int startx = 181, starty = 165;
 	private int mouseX,mouseY;
+	private boolean want_to_undo = false;
 	private boolean black;
 	private int count = 0;
 	private int now_step = 0;
@@ -580,8 +737,26 @@ public class ChessFrame extends JFrame{
 
 			if(chessManList.havaChessman(pos_x, pos_y) || !canPlace.havaChessman(pos_x, pos_y)) return ;
 
+			ChessManList newChess = new ChessManList();
+			
+			for(ChessMan c:chessManList.getList())
+			{
+				try {
+					
+					newChess.add(c.clone());
+					
+				} catch (CloneNotSupportedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			room.setUndoChessManList(newChess);
+			
 			chessManList = turnChessMan(new ChessMan(pos_x, pos_y, !black));
 
+			
+			
 			chessManList.add(pos_x, pos_y, !black);
 			mainPanel.update(chessManList, canPlace);
 			

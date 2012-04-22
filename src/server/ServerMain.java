@@ -34,9 +34,11 @@ import net.ExitRoomNet;
 import net.IDNet;
 import net.JoinRoomNet;
 import net.LoginNet;
+import net.LoseNet;
 import net.Ready;
 import net.RegNet;
 import net.RoomListNet;
+import net.UndoChessNet;
 import net.ViewRoomNet;
 
 public class ServerMain{
@@ -53,7 +55,7 @@ public class ServerMain{
 			ExecSql.connected();
 			
 			Thread clearUser = new ClearUsers();
-			//clearUser.start();
+			clearUser.start();
 			
 			
 			while(true)
@@ -93,21 +95,7 @@ public class ServerMain{
 		
 	}
 	
-	/*
-	 * 下棋结束后更新用户信息
-	 */
-	private void upUserInfo(String name,int Score)
-	{
-		
-		String cm = "UPDATE users SET score = "+Score+" WHERE username = \'"+name+"\'";
-		
-		try {
-			ExecSql.state.execute(cm);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 	/*
 	 * 用于验证此用户是否已经在某房间里了
 	 */
@@ -416,6 +404,23 @@ public class ServerMain{
 					break;
 					}
 					
+					case 3:
+					{
+						LoseNet lose = (LoseNet) cmd;
+						
+						for(Room r:roomList)
+						{
+							if(r.getRoomName().equals(lose.getRoom().getRoomName()))
+							{
+								r.setFinish(true,lose.getUser().getUsername());
+								r.chat+=lose.getUser().getUsername()+" 认输了。\n";
+							return;	
+							}
+						}
+						
+					break;	
+					}
+					
 					case 4://客户端向服务器发送聊天信息
 					{
 						ChatNet chatNet = (ChatNet) cmd;
@@ -617,46 +622,26 @@ public class ServerMain{
 								{
 									noplace = 0;
 									r.setChessManList(chess.getRoom().getChessManList());
+									r.setUndoChessManList(chess.getRoom().getUndoChessManList());
+									
 									
 									if(r.getChessManList().getSize()==64)
 									{
 										r.setFinish(true);
-										
-										if(r.getChessManList().getBlackNum()==r.getChessManList().getwhiteNum())
-											return;
-										
-										if(r.getChessManList().isBlackWin())
-										{
-											if(r.getBlack().equals(r.getPlayer1()))
-											{
-												upUserInfo(r.getPlayer1(),10+r.getScore(r.getPlayer1()));
-												upUserInfo(r.getPlayer2(),-10+r.getScore(r.getPlayer2()));
-											}else
-											{
-												upUserInfo(r.getPlayer1(),-10+r.getScore(r.getPlayer1()));
-												upUserInfo(r.getPlayer2(),10+r.getScore(r.getPlayer2()));
-											}
-										}else
-										{
-											if(r.getBlack().equals(r.getPlayer1()))
-											{
-												upUserInfo(r.getPlayer1(),-10+r.getScore(r.getPlayer1()));
-												upUserInfo(r.getPlayer2(),10+r.getScore(r.getPlayer2()));
-											}else
-											{
-												upUserInfo(r.getPlayer1(),10+r.getScore(r.getPlayer1()));
-												upUserInfo(r.getPlayer2(),-10+r.getScore(r.getPlayer2()));
-											}
-										}
 									}
 									
-									if(r.getNext().equals(r.getPlayer1()))
-									{
-										r.setNext(r.getPlayer2());
-									}else
-									{
-										r.setNext(r.getPlayer1());
-									}
+									
+									
+										if(r.getNext().equals(r.getPlayer1()))
+										{
+											r.setNext(r.getPlayer2());
+										}else
+										{
+											r.setNext(r.getPlayer1());
+										}
+										r.setUndo(0);
+									
+System.out.println("Next:"+r.getNext());
 								}
 								
 								if(chess.getStatus()==-1)
@@ -668,32 +653,6 @@ public class ServerMain{
 									{
 										r.chat+="双方无棋可下，结束游戏。\n";
 										r.setFinish(true);
-										if(r.getChessManList().getBlackNum()==r.getChessManList().getwhiteNum())
-											return;
-										
-										if(r.getChessManList().isBlackWin())
-										{
-											if(r.getBlack().equals(r.getPlayer1()))
-											{
-												upUserInfo(r.getPlayer1(),10+r.getScore(r.getPlayer1()));
-												upUserInfo(r.getPlayer2(),-10+r.getScore(r.getPlayer2()));
-											}else
-											{
-												upUserInfo(r.getPlayer1(),-10+r.getScore(r.getPlayer1()));
-												upUserInfo(r.getPlayer2(),10+r.getScore(r.getPlayer2()));
-											}
-										}else
-										{
-											if(r.getBlack().equals(r.getPlayer1()))
-											{
-												upUserInfo(r.getPlayer1(),-10+r.getScore(r.getPlayer1()));
-												upUserInfo(r.getPlayer2(),10+r.getScore(r.getPlayer2()));
-											}else
-											{
-												upUserInfo(r.getPlayer1(),10+r.getScore(r.getPlayer1()));
-												upUserInfo(r.getPlayer2(),-10+r.getScore(r.getPlayer2()));
-											}
-										}
 									}
 									
 									if(r.getNext().equals(r.getPlayer1()))
@@ -772,6 +731,39 @@ public class ServerMain{
 					break;
 					}
 					
+					case 12:
+					{
+						UndoChessNet undo = (UndoChessNet) cmd;
+						
+						for(Room r:roomList)
+						{
+							if(r.getRoomName().equals(undo.getRoom().getRoomName()))
+							{
+								
+								if(r.getUndo()==0)
+								{
+									if(undo.getUser().getUsername().equals(r.getPlayer1()))
+									{
+										r.setUndo(1);
+									}else
+									{
+										r.setUndo(2);
+									}
+								}else
+								{
+									System.out.println("rece "+undo.getRoom().getUndo());
+									r.setUndo(undo.getRoom().getUndo());
+								}
+								
+								
+							return;	
+							}
+						}
+						
+						
+						
+					break;
+					}
 					}//end switch
 				} catch (IOException e){
 					e.printStackTrace();
@@ -782,18 +774,7 @@ public class ServerMain{
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}finally
-			{
-				try {
-					out.close();
-					in.close();
-					incoming.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
-			
 		}
 	
 		private Socket incoming;

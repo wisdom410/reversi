@@ -9,7 +9,10 @@ Author: lazydomino[AT]163.com(pisces)
 package core;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.Vector;
+
+import sql.ExecSql;
 
 public class Room  implements Serializable{
 
@@ -41,6 +44,24 @@ public class Room  implements Serializable{
 		finish = false;
 
 		
+	}
+	
+	/*
+	 * 下棋结束后更新用户信息
+	 */
+	private void upUserInfo(String name,int Score)
+	{
+		
+		String cm = "UPDATE users SET score = "+Score+" WHERE username = \'"+name+"\'";
+		System.out.println(cm);
+		
+		
+		try {
+			ExecSql.state.execute(cm);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
@@ -254,6 +275,40 @@ public class Room  implements Serializable{
 			else
 				win = play1;
 		}
+		
+		if(win.equals(play1))
+		{
+			upUserInfo(play1, this.getScore(play1)+10);
+			upUserInfo(play2, this.getScore(play2)-10);
+		}else
+		{
+			upUserInfo(play1, this.getScore(play1)-10);
+			upUserInfo(play2, this.getScore(play2)+10);
+		}
+	}
+	
+	public void setFinish(boolean b,String player)
+	{
+		this.finish = b;
+		
+		if(player.equals(play1))
+		{
+			win = play2;
+		}else
+		{
+			win = play1;
+		}
+		
+		if(win.equals(play1))
+		{
+			upUserInfo(play1, this.getScore(play1)+10);
+			upUserInfo(play2, this.getScore(play2)-10);
+		}else
+		{
+			upUserInfo(play1, this.getScore(play1)-10);
+			upUserInfo(play2, this.getScore(play2)+10);
+		}
+		
 	}
 	
 	public String getWin()
@@ -271,6 +326,22 @@ public class Room  implements Serializable{
 		return finish;
 	}
 	
+	public void setUndo(int a)
+	{
+		this.undoStatus = a;
+	}
+	public int getUndo()
+	{
+		return undoStatus;
+	}
+	
+	public ChessManList getUndoChessManList() {
+		return undoChessManList;
+	}
+
+	public void setUndoChessManList(ChessManList undoChessManList) {
+		this.undoChessManList = undoChessManList;
+	}
 	
 //	public String getChat()
 //	{
@@ -291,9 +362,13 @@ public class Room  implements Serializable{
 	private int image1,image2;
 	private boolean canview;
 	private Vector<User> userList;
-	private ChessManList chessManList;
+	private ChessManList chessManList,undoChessManList;
+	
+
+
 	private String next;
 	private String black;
 	public String chat;
 	private boolean finish;
+	private int undoStatus = 0;//0->normal,1->play1 want to undo,2->play2 want to undo,3->yes to undo,4-> no to undo
 }
