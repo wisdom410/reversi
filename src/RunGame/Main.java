@@ -8,7 +8,10 @@ Author: lazydomino@163.com(pisces)
 
 package RunGame;
 
+import gui.Login;
+
 import java.awt.EventQueue;
+import java.io.IOException;
 
 
 public class Main {
@@ -18,7 +21,12 @@ public class Main {
 		{
 			public void run()
 			{
-
+				try {
+					new Login();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}) ;
 	}

@@ -139,6 +139,16 @@ public class Login extends JFrame{
 			
 				
 				String username = usernameField.getText().trim();
+				
+				
+				if(username.equals("single"))
+				{
+					new ChessFrame_old();
+					return;
+				}
+				
+				
+				
 				char[] pass = passwdField.getPassword();
 				
 				if(username.length()==0||pass.length==0)

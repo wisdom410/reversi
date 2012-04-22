@@ -58,7 +58,7 @@ public class RightJPanel extends JPanel{
 		downPanel = new JPanel();
 		downPanel.setLayout(new BorderLayout());
 
-		textArea = new JTextArea(12, 19);
+		textArea = new JTextArea(40, 19);
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		JScrollPane scrollPane = new JScrollPane(textArea);

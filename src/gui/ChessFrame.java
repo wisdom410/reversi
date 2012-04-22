@@ -29,6 +29,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Properties;
+import java.util.Timer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -123,7 +124,7 @@ public class ChessFrame extends JFrame{
 			
 		}else
 		{
-			showDialog("点击准备开始新游戏，点击加载恢复保存棋盘");
+			//showDialog("点击准备开始新游戏，点击加载恢复保存棋盘");
 		}
 		
 
@@ -143,6 +144,19 @@ public class ChessFrame extends JFrame{
 
 
 		mainPanel = new ImageChessBoard();
+		
+		if(user.isPlayer())
+		{
+			if(room.getPlayer1().equals(user.getUsername()))
+			{
+				mainPanel.setMe(1);
+			}else
+			{
+				mainPanel.setMe(2);
+			}
+		}
+		
+		
 		mainPanel.update(chessManList, canPlace);
 		
 		readyButton = new JButton("准备");
@@ -293,9 +307,9 @@ public class ChessFrame extends JFrame{
 		downPanel.add(readyButton);
 		downPanel.add(undoButton);
 		downPanel.add(loseButton);
-		downPanel.add(saveButton);
-		downPanel.add(loadButton);
-		downPanel.setBounds(260, 630,330, 36);
+		//downPanel.add(saveButton);
+		//downPanel.add(loadButton);
+		downPanel.setBounds(280, 630,200, 36);
 		mainPanel.add(downPanel);
 		this.addMouseListener(new MouseAction());
 		this.add(mainPanel);
@@ -469,6 +483,10 @@ public class ChessFrame extends JFrame{
 			
 			this.room = chess.getRoom();
 			
+			mainPanel.setImage(room.getImage1(), room.getImage2());
+			
+			
+			
 			if(user.isPlayer())
 			{
 				if(room.getUndo()==1||room.getUndo()==2)
@@ -592,7 +610,60 @@ public class ChessFrame extends JFrame{
 						findCanPlace(chessManList.getChessMan(i));
 					}
 				}
+				
+				if(25-(int)(System.currentTimeMillis()-startt1)/1000<=0&&recordtime1)
+				{
+					LoseNet lose = new LoseNet(room,user);
+					
+					try {
+					
+						connect();
+						
+						ObjectOutputStream out2 = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+						
+						out2.writeObject(lose);
+						out2.flush();
+						out2.close();
+						
+						s.close();
+						
+					
+					
+						
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				
+				
 			}
+			
+			if(room.getNext().equals(room.getPlayer1()))
+			{
+				if(!recordtime1)
+				{
+					recordtime1 = true;
+					recordtime2 = false;
+					startt1 = System.currentTimeMillis();				
+				}
+				
+				mainPanel.setTime1(25-(int)(System.currentTimeMillis()-startt1)/1000);
+				mainPanel.setTime2(0);
+				
+			}else
+			{
+				if(!recordtime2)
+				{
+					recordtime2 = true;
+					recordtime1 = false;
+					startt2 = System.currentTimeMillis();				
+				}
+				
+				mainPanel.setTime2(25-(int)(System.currentTimeMillis()-startt2)/1000);
+				mainPanel.setTime1(0);
+			}
+		
 			
 			if(want_to_undo) canPlace.clear();
 			
@@ -648,6 +719,9 @@ public class ChessFrame extends JFrame{
 				
 			}
 			mainPanel.update(chessManList, canPlace);
+			
+			if(!user.isPlayer())
+				mainPanel.setTime("00", "00");
 			
 			mainPanel.repaint();
 			
@@ -705,6 +779,8 @@ public class ChessFrame extends JFrame{
 	private User user;
 	private Thread t;
 	private int num_can = 0;
+	private boolean recordtime1 = false,recordtime2 = false;;
+	private long startt1,startt2;
 
 
 	class MouseAction extends MouseAdapter 

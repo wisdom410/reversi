@@ -42,6 +42,7 @@ public class Room  implements Serializable{
 		next ="";
 		black = "";
 		finish = false;
+		image1 = image2 = 0;
 
 		
 	}
@@ -67,13 +68,6 @@ public class Room  implements Serializable{
 	
 	private void flushRoom()
 	{
-		//play1 = "";
-		//play2 = "";
-		score1 = 0;
-		score2 = 0;
-		image1 = 0;
-		image2 = 0;
-		
 		for(User u:userList)
 		{
 			if(u.isPlayer())
