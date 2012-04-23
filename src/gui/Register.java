@@ -263,7 +263,7 @@ public class Register extends JFrame{
 		sexPanel.setLayout(new BorderLayout());
 		sexPanel.add(sexLabel,BorderLayout.WEST);
 		
-		sexBox = new JComboBox<String>();
+		sexBox = new JComboBox();
 		sexBox.addItem("男");
 		sexBox.addItem("女");
 		sexBox.addItem("保密");
@@ -314,7 +314,6 @@ public class Register extends JFrame{
 	}
 	
 	
-	
 	private JPanel mainPanel;	
 	private String username = "";
 	private String passwd = "";	
@@ -323,7 +322,7 @@ public class Register extends JFrame{
 	private String email = "";
 	private JTextField usernameField;
 	private JPasswordField passwdField,passwdField2;
-	private JComboBox<String> sexBox;
+	private JComboBox sexBox;
 	private JTextField nicknameField;
 	private JTextField emailField ;
 	private static Socket s;

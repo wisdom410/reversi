@@ -91,6 +91,10 @@ public class ChessManList  implements Cloneable,Serializable{
 		return list;
 	}
 
+	public int[][] getChessManArray()
+	{
+		return chessMan;
+	}
 
 	public boolean havaChessman(int x, int y)//the x and y must be start from 1,1
 	{
@@ -135,6 +139,15 @@ public class ChessManList  implements Cloneable,Serializable{
 		cloned.numBlack = numBlack;
 		cloned.numWhite = numWhite;
 		return cloned;
+	}
+	
+	public boolean equals(ChessManList c)
+	{
+		for(int i = 0;i<9;i++)
+			for(int j = 0;j<9;j++)
+				if(chessMan[i][j]!=c.getChessManArray()[i][j])
+					return false;
+		return true;
 	}
 
 }

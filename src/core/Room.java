@@ -38,6 +38,7 @@ public class Room  implements Serializable{
 		chessManList.add(5, 5, false);
 		next ="";
 		black = "";
+		finish = false;
 
 		
 	}
@@ -119,6 +120,16 @@ public class Room  implements Serializable{
 	public int getScore2()
 	{
 		return score2;
+	}
+	
+	public int getScore(String name)
+	{
+		for(User u:userList)
+		{
+			if(u.getUsername().equals(name))
+				return u.getScore();
+		}
+		return 0;
 	}
 	
 	public String getStatus()
@@ -226,6 +237,39 @@ public class Room  implements Serializable{
 		return this.black;
 	}
 	
+	public void setFinish(boolean b)
+	{
+		this.finish = b;
+		
+		if(chessManList.getBlackNum()>=chessManList.getwhiteNum())
+		{
+			if(play1.equals(black))
+				win = play1;
+			else
+				win = play2;
+		}else
+		{
+			if(play1.equals(black))
+				win = play2;
+			else
+				win = play1;
+		}
+	}
+	
+	public String getWin()
+	{
+		return win;
+	}
+	
+	public String getLose()
+	{
+		return lose;
+	}
+
+	public boolean isFinish()
+	{
+		return finish;
+	}
 	
 	
 //	public String getChat()
@@ -240,7 +284,7 @@ public class Room  implements Serializable{
 //	}
 	
 	private String roomName;
-	private String play1,play2;
+	private String play1,play2,win,lose;
 	private boolean player1Ready,player2Ready;
 	private String status;
 	private int score1,score2;
@@ -251,4 +295,5 @@ public class Room  implements Serializable{
 	private String next;
 	private String black;
 	public String chat;
+	private boolean finish;
 }

@@ -38,6 +38,7 @@ import javax.swing.JPanel;
 import net.ChessFrameNet;
 import net.ExitRoomNet;
 import net.Ready;
+import net.UndoChess;
 
 import core.ChessMan;
 import core.ChessManList;
@@ -56,8 +57,8 @@ public class ChessFrame extends JFrame{
 		this.setIconImage(ico.getImage());
 		this.setLayout(new BorderLayout());
 		this.setVisible(true);
-		this.setMinimumSize(new Dimension(1024, 730));
-		this.setMaximumSize(new Dimension(1024, 730));
+		this.setMinimumSize(new Dimension(1010, 700));
+		this.setMaximumSize(new Dimension(1010, 700));
 		this.setResizable(false);
 		
 		this.room = room;
@@ -204,6 +205,8 @@ public class ChessFrame extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
+				
+				
 			
 
 			}
@@ -267,6 +270,7 @@ public class ChessFrame extends JFrame{
 			{
 			//	System.out.println("find= "+(x + dx[i])+" "+(y + dy[i]));
 				canPlace.add(x + dx[i], y + dy[i], chessMan.isBlack());
+				num_can++;
 			}
 		}	
 	}
@@ -330,21 +334,6 @@ public class ChessFrame extends JFrame{
 		return newList;
 
 	}
-
-
-
-	public void finish()
-	{
-		if(chessManList.isBlackWin())
-		{
-			showDialog("黑棋获胜！");
-		}else
-		{
-			showDialog("白棋获胜！");
-		}
-		return;
-	}
-	
 	
 	/*
 	 * 连接服务器
@@ -404,13 +393,26 @@ public class ChessFrame extends JFrame{
 			chess = (ChessFrameNet) in.readObject();
 			
 			
+			
 			this.room = chess.getRoom();
+			
+			if(!room.getChessManList().equals(chessManList))
+			{
+				undoStep++;
+				System.out.println("undo="+undoStep);
+				undoChessManList[undoStep] = new ChessManList();
+				
+				for(ChessMan c:chessManList.getList())
+				{
+					undoChessManList[undoStep].add(c.clone());
+				}
+			}
 			
 			//System.out.println("read chessFrameNet From server OK!");
 			chessManList = room.getChessManList();		
 			
 			
-			System.out.println(room.getBlack()+"   "+user.getUsername());
+			//System.out.println(room.getBlack()+"   "+user.getUsername());
 			
 			if(!user.getUsername().equals(room.getBlack()))
 				black = true;
@@ -419,6 +421,11 @@ public class ChessFrame extends JFrame{
 			
 			
 			canPlace.clear();
+			
+			num_can = 0;
+			
+			undoButton.setEnabled(false);
+			loseButton.setEnabled(false);
 			
 			if((room.getNext().equals(user.getUsername())))
 			{
@@ -429,15 +436,65 @@ public class ChessFrame extends JFrame{
 						findCanPlace(chessManList.getChessMan(i));
 					}
 				}
+				undoButton.setEnabled(true);
+				loseButton.setEnabled(true);
 			}
 			
+			if(!room.chat.equals(rightPanel.textArea.getText()))
+				rightPanel.textArea.setText(room.chat);
 				
 			mainPanel.update(chessManList, canPlace);
 			
 			mainPanel.repaint();
 			
-			if(!room.chat.equals(rightPanel.textArea.getText()))
-				rightPanel.textArea.setText(room.chat);
+			if(room.getNext().equals(user.getUsername())&&num_can==0)
+			{
+				connect();
+				ChessFrameNet ch = new ChessFrameNet();
+				ch.setStatus(-1);
+				
+				ObjectOutputStream out2 = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+				out2.writeObject(ch);
+				out2.flush();
+				out2.close();
+				
+			}
+			
+			
+			if(room.isFinish())
+			{
+				String str ="恭喜 "+room.getWin()+" 获得胜利！\n";
+				showDialog(str);
+				
+				
+				user.setPlayer(false);
+				ExitRoomNet exit = new ExitRoomNet(user);
+				
+				try {
+
+					if(t!=null)
+						t.stop();
+						
+					connect();
+					ObjectOutputStream out2 = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+					
+					out2.writeObject(exit);
+					out2.flush();
+					out2.close();
+					
+					s.close();
+					this.dispose();
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+			
+			
+			s.close();			
+			
 			
 		}catch (Exception e)
 		{
@@ -478,7 +535,8 @@ public class ChessFrame extends JFrame{
 	private RightJPanel  rightPanel;
 	private ImageChessBoard mainPanel;
 	private ChessManList chessManList, canPlace;
-	private ChessManList[] undoChessManList = new ChessManList[65];
+	private ChessManList[] undoChessManList = new ChessManList[1000];
+	private int undoStep =0;
 	private JButton loseButton, undoButton, saveButton, loadButton, readyButton;
 	private int startx = 181, starty = 165;
 	private int mouseX,mouseY;
@@ -489,6 +547,7 @@ public class ChessFrame extends JFrame{
 	private Room room;
 	private User user;
 	private Thread t;
+	private int num_can = 0;
 
 
 	class MouseAction extends MouseAdapter 
@@ -532,6 +591,8 @@ public class ChessFrame extends JFrame{
 			//System.out.println(pos_x+" "+pos_y);
 			canPlace.clear();
 			mainPanel.repaint();
+			
+			
 		}
 	}
 	
@@ -550,7 +611,14 @@ public class ChessFrame extends JFrame{
 			while(true)
 			{
 				
-				refreshRoom();
+				if(s==null)
+				{
+					refreshRoom();
+				}else
+				if(s.isClosed())
+				{
+					refreshRoom();
+				}
 				
 				try {
 					sleep(50);

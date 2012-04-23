@@ -94,6 +94,21 @@ public class ServerMain{
 	}
 	
 	/*
+	 * 下棋结束后更新用户信息
+	 */
+	private void upUserInfo(String name,int Score)
+	{
+		
+		String cm = "UPDATE users SET score = "+Score+" WHERE username = \'"+name+"\'";
+		
+		try {
+			ExecSql.state.execute(cm);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	/*
 	 * 用于验证此用户是否已经在某房间里了
 	 */
 	private boolean isInRoom(User usr)
@@ -574,6 +589,9 @@ public class ServerMain{
 					
 					case 10://获取房间内信息
 					{
+						
+						int noplace = 0;
+						
 						ChessFrameNet chess = (ChessFrameNet) cmd;
 						
 						
@@ -597,7 +615,40 @@ public class ServerMain{
 								
 								if(chess.getStatus()==1)
 								{
+									noplace = 0;
 									r.setChessManList(chess.getRoom().getChessManList());
+									
+									if(r.getChessManList().getSize()==64)
+									{
+										r.setFinish(true);
+										
+										if(r.getChessManList().getBlackNum()==r.getChessManList().getwhiteNum())
+											return;
+										
+										if(r.getChessManList().isBlackWin())
+										{
+											if(r.getBlack().equals(r.getPlayer1()))
+											{
+												upUserInfo(r.getPlayer1(),10+r.getScore(r.getPlayer1()));
+												upUserInfo(r.getPlayer2(),-10+r.getScore(r.getPlayer2()));
+											}else
+											{
+												upUserInfo(r.getPlayer1(),-10+r.getScore(r.getPlayer1()));
+												upUserInfo(r.getPlayer2(),10+r.getScore(r.getPlayer2()));
+											}
+										}else
+										{
+											if(r.getBlack().equals(r.getPlayer1()))
+											{
+												upUserInfo(r.getPlayer1(),-10+r.getScore(r.getPlayer1()));
+												upUserInfo(r.getPlayer2(),10+r.getScore(r.getPlayer2()));
+											}else
+											{
+												upUserInfo(r.getPlayer1(),10+r.getScore(r.getPlayer1()));
+												upUserInfo(r.getPlayer2(),-10+r.getScore(r.getPlayer2()));
+											}
+										}
+									}
 									
 									if(r.getNext().equals(r.getPlayer1()))
 									{
@@ -608,6 +659,51 @@ public class ServerMain{
 									}
 								}
 								
+								if(chess.getStatus()==-1)
+								{
+									r.chat+=r.getNext()+" 无棋可下,跳过。\n";
+									
+									noplace++;
+									if(noplace>=2)
+									{
+										r.chat+="双方无棋可下，结束游戏。\n";
+										r.setFinish(true);
+										if(r.getChessManList().getBlackNum()==r.getChessManList().getwhiteNum())
+											return;
+										
+										if(r.getChessManList().isBlackWin())
+										{
+											if(r.getBlack().equals(r.getPlayer1()))
+											{
+												upUserInfo(r.getPlayer1(),10+r.getScore(r.getPlayer1()));
+												upUserInfo(r.getPlayer2(),-10+r.getScore(r.getPlayer2()));
+											}else
+											{
+												upUserInfo(r.getPlayer1(),-10+r.getScore(r.getPlayer1()));
+												upUserInfo(r.getPlayer2(),10+r.getScore(r.getPlayer2()));
+											}
+										}else
+										{
+											if(r.getBlack().equals(r.getPlayer1()))
+											{
+												upUserInfo(r.getPlayer1(),-10+r.getScore(r.getPlayer1()));
+												upUserInfo(r.getPlayer2(),10+r.getScore(r.getPlayer2()));
+											}else
+											{
+												upUserInfo(r.getPlayer1(),10+r.getScore(r.getPlayer1()));
+												upUserInfo(r.getPlayer2(),-10+r.getScore(r.getPlayer2()));
+											}
+										}
+									}
+									
+									if(r.getNext().equals(r.getPlayer1()))
+									{
+										r.setNext(r.getPlayer2());
+									}else
+									{
+										r.setNext(r.getPlayer1());
+									}
+								}
 							}
 						}
 						
