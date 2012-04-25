@@ -20,7 +20,9 @@ import core.ChessMan;
 import core.ChessManList;
 
 
-/*
+/**
+ * @author will
+ * 这个是否则绘制房间（棋盘）主界面的类
  * 重载了JPanel 的 paint 方法，把背景图片画上。
  * 绘制黑色分割线棋盘。
  * @see javax.swing.JComponent#paint(java.awt.Graphics)

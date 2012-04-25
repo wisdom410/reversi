@@ -41,6 +41,11 @@ import net.RoomListNet;
 import net.UndoChessNet;
 import net.ViewRoomNet;
 
+/**
+ * 
+ * @author will
+ * 这个是服务器内处理用户连接、保存房间、用户信息、处理用户信息的主类（very important!!!!!）
+ */
 public class ServerMain{
 
 	public ServerMain() throws SQLException

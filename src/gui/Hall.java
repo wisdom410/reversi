@@ -53,7 +53,8 @@ import net.ViewRoomNet;
 import core.User;
 import core.Room;
 import core.HallTableModel;
-/*
+/**
+ * @author will
  * 这个类 是大厅类，
  * 包含：
  * 房间列表等。

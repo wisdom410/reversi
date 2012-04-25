@@ -8,7 +8,9 @@ Author: lazydomino[AT]163.com(pisces)
 
 package net;
 
-/*
+/**
+ * @author will
+ *
  * 这个类是用来封装注册信息的类，用于注册客户端和服务器之间传输注册信息
  * status：0->注册成功，1->存在此用户。
  */

@@ -14,6 +14,11 @@ import java.util.Vector;
 
 import sql.ExecSql;
 
+/**
+ * 
+ * @author will
+ *房间类，包含当前房间内用户信息，棋盘信息，聊天信息
+ */
 public class Room  implements Serializable{
 
 	public Room(String roomName)
@@ -65,7 +70,9 @@ public class Room  implements Serializable{
 		}
 	}
 	
-	
+	/*
+	 * 刷新房间信息
+	 */
 	private void flushRoom()
 	{
 		for(User u:userList)
@@ -90,53 +97,77 @@ public class Room  implements Serializable{
 			}
 		}
 	}
-	
+	/*
+	 * 设置房间是否能被观战
+	 */
 	public void setcanView(boolean can)
 	{
 		this.canview = can;
 	}
-	
+	/*
+	 * 获取此房间是否能被观看
+	 */
 	public boolean getcanView()
 	{
 		return this.canview;
 	}
-	
+	/*
+	 * 增加一个用户
+	 */
 	public void addUser(User user)
 	{
 		userList.add(user);
 		flushRoom();
 	}
-	
+	/*
+	 * 获取当前房间内人数
+	 */
 	public int getnum_pep()
 	{
 		return userList.size();
 	}
 	
+	/*
+	 * 删除一个用户
+	 */
 	public void delUser(User user)
 	{
 		userList.remove(user);
 		flushRoom();
 	}
 	
+	/*
+	 * 获取房间名
+	 */
 	public String getRoomName()
 	{
 		return roomName;
 	}
+	/*
+	 * 获取次房间用户列表
+	 */
 	public Vector<User> getUserList()
 	{
 		return userList;
 	}
-	
+	/*
+	 * 获取玩家1的积分
+	 */
 	public int getScore1()
 	{
 		return score1;
 	}
 	
+	/*
+	 * 获取玩家2的积分
+	 */
 	public int getScore2()
 	{
 		return score2;
 	}
-	
+	/*
+	 * 获取某个玩家的积分
+	 */
 	public int getScore(String name)
 	{
 		for(User u:userList)
@@ -146,47 +177,64 @@ public class Room  implements Serializable{
 		}
 		return 0;
 	}
-	
+	/*
+	 * 获取房间状态
+	 */
 	public String getStatus()
 	{
 		return status;
 	}
-	
+	/*
+	 * 设置房间状态
+	 */
 	public void setStatus(String s)
 	{
 		status = s;
 	}
+	/*
+	 * 获取玩家1的名字
+	 */
 	public String getPlayer1()
 	{
 		return play1;
 	}
-	
+	/*
+	 * 获取玩家2的名字
+	 */
 	public String getPlayer2()
 	{
 		return play2;
 	}
-	
+	/*
+	 * 玩家1是否空缺
+	 */
 	public boolean isPlayer1isEmpty()
 	{
 		if(play1.length()==0)
 			return true;
 		return false;
 	}
-	
+	/*
+	 * 玩家2是否空缺
+	 */
 	public boolean isPlayer2isEmpty()
 	{
 		if(play2.length()==0)
 			return true;
 		return false;
 	}
-	
+	/*
+	 * 设置玩家1
+	 */
 	public void setPlayer1(User user)
 	{
 		this.play1 = user.getUsername();
 		this.score1 = user.getScore();
 		this.image1 = user.getImage();
 	}
-	
+	/*
+	 * 设置玩家2
+	 */
 	public void setPlayer2(User user)
 	{
 		this.play2 = user.getUsername();
@@ -194,64 +242,94 @@ public class Room  implements Serializable{
 		this.image2 = user.getImage();
 	}
 	
+	/*
+	 * 设置棋盘
+	 */
 	public void setChessManList (ChessManList c)
 	{
 		this.chessManList = c;
 	}
 	
+	/*
+	 * 获取棋盘
+	 */
 	public ChessManList getChessManList()
 	{
 		return this.chessManList;
 	}
-	
+	/*
+	 * 设置下一步下棋的人
+	 */
 	public void setNext(String s)
 	{
 		this.next = s;
 	}
-	
+	/*
+	 * 获取下一步下棋的人
+	 */
 	public String getNext()
 	{
 		return this.next;
 	}
-	
+	/*
+	 * 设置玩家1为准备状态
+	 */
 	public void setPlayer1Ready(boolean b)
 	{
 		player1Ready = b;
 	}
+	/*
+	 * 获取玩家1是否为准备状态
+	 */
 	public boolean getPlayer1Ready()
 	{
 		return player1Ready;
 	}
-	
+	/*
+	 * 设置玩家2为准备状态
+	 */
 	public void setPlayer2Ready(boolean b)
 	{
 		player2Ready = b;
 	}
+	/*
+	 * 获取玩家2是否为准备状态
+	 */
 	public boolean getPlayer2Ready()
 	{
 		return player2Ready;
 	}
-	
+	/*
+	 * 获取玩家1头像
+	 */
 	public int getImage1()
 	{
 		return image1;
 	}
-	
+	/*
+	 * 获取玩家2头像
+	 */
 	public int getImage2()
 	{
 		return image2;
 	}
-	
+	/*
+	 * 设置黑色棋子是谁
+	 */
 	public void setBlack(String s)
 	{
 		this.black = s;
 	}
-	
+	/*
+	 * 获取黑色棋子是谁
+	 */
 	public String getBlack()
 	{
 		return this.black;
 	}
-	
+	/*
+	 * 设置此棋盘下完了
+	 */
 	public void setFinish(boolean b)
 	{
 		this.finish = b;
@@ -280,7 +358,9 @@ public class Room  implements Serializable{
 			upUserInfo(play2, this.getScore(play2)+10);
 		}
 	}
-	
+	/*
+	 * 设置棋盘下完了，并且设置谁是赢家
+	 */
 	public void setFinish(boolean b,String player)
 	{
 		this.finish = b;
@@ -304,35 +384,52 @@ public class Room  implements Serializable{
 		}
 		
 	}
-	
+	/*
+	 * 获取赢家名字
+	 */
 	public String getWin()
 	{
 		return win;
 	}
-	
+	/*
+	 * 获取败家名字
+	 */
 	public String getLose()
 	{
 		return lose;
 	}
 
+	/*
+	 * 获取此棋盘是否结束
+	 */
 	public boolean isFinish()
 	{
 		return finish;
 	}
-	
+	/*
+	 * 设置为悔棋状态
+	 */
 	public void setUndo(int a)
 	{
 		this.undoStatus = a;
 	}
+	/*
+	 * 得到悔棋状态
+	 */
 	public int getUndo()
 	{
 		return undoStatus;
 	}
-	
+	/*
+	 * 获取悔棋棋盘
+	 */
 	public ChessManList getUndoChessManList() {
 		return undoChessManList;
 	}
 
+	/*
+	 * 设置悔棋棋盘
+	 */
 	public void setUndoChessManList(ChessManList undoChessManList) {
 		this.undoChessManList = undoChessManList;
 	}

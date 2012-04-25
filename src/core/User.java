@@ -12,7 +12,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-/*
+/**
+ * @author will
  * 这个类是用来储存用户信息的，
  * 包括但不限于记录当前用户的input，output流，
  * 所属房间标记，是否是玩家（对应于观赛者），

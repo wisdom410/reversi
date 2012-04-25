@@ -3,7 +3,8 @@ package net;
 import core.Room;
 import core.User;
 
-/*
+/**
+ * @author will
  * 这个类是由客户端向服务器发送点击了准备按钮的命令的
  */
 public class Ready extends IDNet{

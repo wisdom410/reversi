@@ -30,7 +30,12 @@ import javax.swing.JPanel;
 import core.ChessMan;
 import core.ChessManList;
 
-
+/**
+ * 
+ * @author will
+ * 这个类是我首先写的单机版黑白棋
+ * 现在单机版用此类
+ */
 public class ChessFrame_old extends JFrame{
 
 	public ChessFrame_old()

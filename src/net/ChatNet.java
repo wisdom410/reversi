@@ -11,7 +11,8 @@ package net;
 import core.Room;
 import core.User;
 
-/*
+/**
+ * @author will
  * ID = 4
  * 这个类是用来封装聊天信息的
  * status：

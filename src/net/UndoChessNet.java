@@ -11,6 +11,11 @@ package net;
 import core.Room;
 import core.User;
 
+/**
+ * 
+ * @author will
+ * 这个是传输悔棋信息的类
+ */
 public class UndoChessNet extends IDNet{
 
 	public UndoChessNet(Room r,User u)

@@ -11,7 +11,9 @@ import javax.swing.table.AbstractTableModel;
  Author: lazydomino[AT]163.com(pisces)
  */
 
-/*
+/**
+ * 
+ * @author will
  * 这个类是游戏大厅现实房间列表table的model
  */
 public class HallTableModel extends AbstractTableModel {

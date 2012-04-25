@@ -11,13 +11,14 @@ package core;
 import java.security.MessageDigest;
 
 /**
- * MD5 加密模块
+ * 
+ * @author will
+ *MD5 加密模块
  */
 public class GenMD5 {
 
 		public GenMD5()
 		{
-			
 			
 		}
 		
@@ -32,6 +33,9 @@ public class GenMD5 {
 			return md5(passwd);
 		}
 	
+		/*
+		 * 返回输入字符传的md5值
+		 */
 		public static String getMD5(String str)
 		{
 			return md5(str);

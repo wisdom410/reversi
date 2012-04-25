@@ -48,6 +48,12 @@ import core.ChessManList;
 import core.Room;
 import core.User;
 
+/**
+ * 
+ * @author will
+ * 这个是网络版用的房间窗口，由ChessFrame_old演化而来
+ */
+
 public class ChessFrame extends JFrame{
 	
 	public ChessFrame(Room room,User u)

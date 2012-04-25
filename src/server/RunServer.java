@@ -10,9 +10,13 @@ package server;
 
 import java.sql.SQLException;
 
+/**
+ * 
+ * @author will
+ * 这个是运行服务器的主类
+ * 同时只允许运行一个服务器
+ */
 public class RunServer {
-
-	
 	
 	public static void main(String[] args) throws SQLException {
 		

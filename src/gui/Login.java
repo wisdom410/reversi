@@ -37,6 +37,12 @@ import core.User;
 
 import net.LoginNet;
 
+
+/**
+ * 
+ * @author will
+ * 这个是登陆界面
+ */
 public class Login extends JFrame{
 
 	public Login() throws IOException

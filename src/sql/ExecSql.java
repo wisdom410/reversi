@@ -17,6 +17,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+/**
+ * 
+ * @author will
+ * 这个是执行数据库命令的静态方法类
+ */
 public  class ExecSql {
 
 

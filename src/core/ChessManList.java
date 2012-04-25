@@ -11,8 +11,10 @@ package core;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/*
- * 描述整个棋盘的类。每个棋子都存在一个ArrayList里面，遍历ArrayList就可以找到各个棋子位置。
+/**
+ * 
+ * @author will
+ *描述整个棋盘的类。每个棋子都存在一个ArrayList里面，遍历ArrayList就可以找到各个棋子位置。
  */
 public class ChessManList  implements Cloneable,Serializable{
 
@@ -29,7 +31,9 @@ public class ChessManList  implements Cloneable,Serializable{
 	private int numWhite = 0;
 	public boolean black = false;
 
-
+	/*
+	 * 添加棋子
+	 */
 	public void add(int x,int y, boolean black)//the x and y must be start from 1,1
 	{
 		if(chessMan[x][y] != 0) return ;
@@ -37,7 +41,9 @@ public class ChessManList  implements Cloneable,Serializable{
 		if(black) chessMan[x][y] = 1;else chessMan[x][y] = 2;
 		if(black) numBlack++;else numWhite++;
 	}
-
+	/*
+	 *添加棋子 
+	 */
 	public void add(ChessMan c)//the x and y must be start from 1,1
 	{
 		int x = c.getX();
@@ -49,7 +55,9 @@ public class ChessManList  implements Cloneable,Serializable{
 		if(black) numBlack++;else numWhite++;
 	}
 
-
+	/*
+	 * 翻转棋子
+	 */
 	public void turn(int x, int y)//the x and y must be start from 1,1
 	{
 		if(chessMan[x][y] == 1)
@@ -69,54 +77,83 @@ public class ChessManList  implements Cloneable,Serializable{
 				list.get(i).setColor();
 			}
 	}
-
+	/*
+	 * 获取棋盘中棋子个数
+	 */
 	public int getSize()
 	{
 		return list.size();
 	}
-
+	/*
+	 * 得到某个棋子
+	 * 
+	 */
 	public ChessMan getChessMan(int index)
 	{
 		return list.get(index);
 	}
 
+	/*
+	 * 
+	 */
 	public boolean isBlack(int x,int y)//
 	{
 		if(chessMan[x][y] == 1) return true;
 		return false;
 	}
 
+	/*
+	 * 获取棋子列表
+	 */
 	public ArrayList<ChessMan> getList()
 	{
 		return list;
 	}
 
+	/*
+	 * 获取棋子列表
+	 */
 	public int[][] getChessManArray()
 	{
 		return chessMan;
 	}
 
+	/*
+	 * 判断当前位置是否有棋子
+	 */
 	public boolean havaChessman(int x, int y)//the x and y must be start from 1,1
 	{
 		if(chessMan[x][y] != 0) return true;
 		return false;
 	}
 
+	/*
+	 * 获取黑色棋子的数量
+	 */
 	public int getBlackNum()
 	{
 		return numBlack;
 	}
 
+	/*
+	 * 获取白色棋子的数量
+	 */
 	public int getwhiteNum()
 	{
 		return numWhite;
 	}
 
+	/*
+	 * 判断是否是黑色棋子胜利了，否则是白色棋子胜利了
+	 */
 	public boolean isBlackWin()
 	{
 		return numBlack > numWhite ? true:false;
 	}
 
+	/*
+	 * 清除棋盘
+	 */
 	public void clear()
 	{
 		list.clear();
@@ -127,6 +164,10 @@ public class ChessManList  implements Cloneable,Serializable{
 			}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
 	public ChessManList clone() throws CloneNotSupportedException
 	{
 		ChessManList cloned = (ChessManList) super.clone();
@@ -141,6 +182,9 @@ public class ChessManList  implements Cloneable,Serializable{
 		return cloned;
 	}
 	
+	/*
+	 * 判断两个棋盘是否相同
+	 */
 	public boolean equals(ChessManList c)
 	{
 		for(int i = 0;i<9;i++)

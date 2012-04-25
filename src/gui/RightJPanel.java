@@ -37,8 +37,9 @@ import net.ChatNet;
 import core.Room;
 import core.User;
 
-/*
- * RightPanel
+/**
+ * @author will
+ * 这个是房间界面右侧类，包含聊天框和聊天信息发送框
  */
 public class RightJPanel extends JPanel{
 

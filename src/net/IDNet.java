@@ -10,7 +10,8 @@ package net;
 
 import java.io.Serializable;
 
-/*
+/**
+ * @author will
  * 该类是所有网络传输 object类 的父类。
  * status 主要用与 服务器返回给客户端 信息的标记。
  */

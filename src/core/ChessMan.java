@@ -22,18 +22,32 @@ public class ChessMan implements Cloneable,Serializable
 		this.black = black;
 	}
 
+	/*
+	 * 判断当前棋子是否是黑色
+	 */
 	public boolean isBlack()
 	{
 		return black;
 	}
+	/*
+	 * 获取这个棋子在棋盘上的x坐标
+	 * 
+	 */
 	public int getX()
 	{
 		return this.x;
 	}
+	/*
+	 * 获取这个棋子在棋盘上的y坐标
+	 * 
+	 */
 	public int getY()
 	{
 		return this.y;
 	}
+	/*
+	 * 设置棋盘的颜色
+	 */
 	public void setColor()
 	{
 		this.black = !this.black;

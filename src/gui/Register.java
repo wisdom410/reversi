@@ -39,8 +39,9 @@ import core.User;
 import net.LoginNet;
 import net.RegNet;
 
-/*
- * 这个是注册用户的类
+/**
+ * @author will
+ * 这个是注册用户界面类
  */
 public class Register extends JFrame{
 
@@ -163,6 +164,7 @@ public class Register extends JFrame{
 				// TODO Auto-generated method stub
 				usernameField.setText("");
 				passwdField.setText("");
+				passwdField2.setText("");
 				sexBox.setSelectedIndex(0);
 				nicknameField.setText("");
 				emailField.setText("");

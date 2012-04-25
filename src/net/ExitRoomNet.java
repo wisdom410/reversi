@@ -2,8 +2,9 @@ package net;
 
 import core.User;
 
-/*
- *   
+/**
+ * @author will
+ *   这个类是用来传输用户退出房间信息的类
  */
 public class ExitRoomNet extends IDNet{
 

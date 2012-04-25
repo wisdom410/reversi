@@ -3,7 +3,8 @@ package net;
 import core.Room;
 import core.User;
 
-/*
+/**
+ * @author will
  * 这个类是来通信认输信息的
  */
 public class LoseNet extends IDNet{

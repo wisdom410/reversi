@@ -8,6 +8,12 @@ Author: lazydomino@163.com(pisces)
 
 package RunGame;
 
+
+/**
+ * @author will
+ * 这个是运行客户端的主类
+ * 用户名用single，密码为空则进入单机模式
+ */
 import gui.Login;
 
 import java.awt.EventQueue;

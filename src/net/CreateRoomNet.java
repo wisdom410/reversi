@@ -10,7 +10,8 @@ package net;
 
 import core.User;
 
-/*
+/**
+ * @author will
  * 这个类是用来向server请求创建房间的
  * status :0->创建成功,1->已经有此房间,2->用户已经在某房间，不允许建立房间
  */

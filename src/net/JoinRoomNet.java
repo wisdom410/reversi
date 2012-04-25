@@ -3,7 +3,8 @@ package net;
 import core.Room;
 import core.User;
 
-/*
+/**
+ * @author will
  * 这个类是用来在客户端和服务器之间传输加入房间信息的
  * status: 0->加入成功, 1-> 用户已经在某个房间了
  */

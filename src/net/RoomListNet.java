@@ -13,8 +13,9 @@ import java.util.Vector;
 import core.Room;
 import core.User;
 
-/*
- * 这个类是房间类
+/**
+ * @author will
+ * 这个类是传输房间列表的类
  * status：0->请求获取房间列表，1->回复房间列表
  */
 public class RoomListNet extends IDNet{

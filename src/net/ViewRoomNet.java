@@ -3,7 +3,8 @@ package net;
 import core.Room;
 import core.User;
 
-/*
+/**
+ * @author will
  * 这个类是用来客户端和服务器之间传递观看房间内容的请求/反馈的
  * status:0->加入成功，1->此房间不允许观看,2->用户已经在某房间了
  */
