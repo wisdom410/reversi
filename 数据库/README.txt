@@ -29,4 +29,3 @@ mysql> select * from users;
 user1，user2，user3密码为123456
 sdlwwlp密码为888999
 密码md5($password)形式
------lazydomino@163.com,2012.4.24
